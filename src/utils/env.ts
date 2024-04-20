@@ -1,0 +1,1 @@
+export const OPENSTREETMAP_URL = process.env.NEXT_PUBLIC_OPENSTREETMAP_URL || ''
