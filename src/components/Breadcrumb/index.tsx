@@ -18,12 +18,11 @@ const BasicBreadcrumbs = ({
   subLink = undefined
 }: IBasicBreadcrumbsProps): JSX.Element => {
   const dashboard = useSelector((state: AppState) => state.dashboard)
-  const currentRole = (dashboard?.users || dashboard?.dinas)?.role_id ?? 1
+  const currentRole = dashboard?.users?.role
 
-  const currentPath: Record<number, string> = {
-    1: '/dashboard',
-    2: '/dinas',
-    3: '/dashboard'
+  const currentPath: Record<string, string> = {
+    administrator: '/dashboard',
+    owner: '/dashboard'
   }
 
   return (

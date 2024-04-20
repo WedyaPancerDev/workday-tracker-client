@@ -76,11 +76,10 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
     }, [token, users.id, users.role])
 
     useEffect(() => {
-      if (isAlreadySave && !dashboard?.profile) {
+      if (isAlreadySave && !dashboard?.profile && token) {
         getProfileUser()
-        console.info('Call profile user...')
       }
-    }, [isAlreadySave, dashboard?.profile])
+    }, [isAlreadySave, dashboard?.profile, token])
 
     return <WrappedComponent {...props} />
   }

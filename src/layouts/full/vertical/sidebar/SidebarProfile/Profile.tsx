@@ -9,18 +9,18 @@ import {
 import { IconPower } from '@tabler/icons-react'
 import { type AppState, useSelector } from '@/store/Store'
 
-import { signOut } from 'next-auth/react'
+import useLogout from '@/hooks/useLogout'
 
 export const Profile = (): JSX.Element => {
+  const { handleLogout, isLoadingLogout } = useLogout()
+
   const customizer = useSelector((state: AppState) => state.customizer)
+  const dashboard = useSelector((state: AppState) => state.dashboard)
+
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up('lg'))
   const hideMenu = lgUp
     ? customizer.isCollapse && !customizer.isSidebarHover
     : ''
-
-  const handleLogout = async (): Promise<void> => {
-    await signOut()
-  }
 
   return (
     <Box
@@ -34,8 +34,21 @@ export const Profile = (): JSX.Element => {
           <Avatar alt="Remy Sharp" src={'/images/profile/user-1.jpg'} />
 
           <Box>
-            <Typography variant="h6">Mathew</Typography>
-            <Typography variant="caption">Designer</Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                width: '80px',
+                marginTop: '2px',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {dashboard?.profile?.fullname || '...'}
+            </Typography>
+            <Typography variant="caption" sx={{ textTransform: 'capitalize' }}>
+              {dashboard?.profile?.position || '...'}
+            </Typography>
           </Box>
           <Box sx={{ ml: 'auto' }}>
             <Tooltip title="Logout" placement="top">
@@ -44,9 +57,10 @@ export const Profile = (): JSX.Element => {
                 onClick={() => {
                   handleLogout()
                 }}
+                size="small"
                 color="primary"
                 aria-label="logout"
-                size="small"
+                disabled={isLoadingLogout}
               >
                 <IconPower size="20" />
               </IconButton>

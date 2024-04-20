@@ -13,7 +13,7 @@ import {
   ListItemButton
 } from '@mui/material'
 import { IconSearch, IconX } from '@tabler/icons-react'
-import { MenuItems } from '../sidebar/MenuItems'
+import { AdminMenuItems } from '../sidebar/MenuItems'
 import Link from 'next/link'
 
 interface menuType {
@@ -44,8 +44,8 @@ const Search = (): JSX.Element => {
     return rotr
   }
 
-  const MemoizedMenuItems = useMemo(() => MenuItems, [])
-  const searchData = filterRoutes(MemoizedMenuItems.admin, search)
+  const MemoizedMenuItems = useMemo(() => AdminMenuItems, [])
+  const searchData = filterRoutes(MemoizedMenuItems, search)
 
   return (
     <>
