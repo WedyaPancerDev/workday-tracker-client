@@ -54,9 +54,11 @@ const FullLayout: React.FC<Props> = ({ children }): JSX.Element => {
         {customizer.isHorizontal ? <HorizontalHeader /> : <Header />}
         {/* PageContent */}
         {customizer.isHorizontal ? <Navigation /> : ''}
-        <Container
+        <Box
           sx={{
-            maxWidth: customizer.isLayout === 'boxed' ? 'lg' : '100%!important'
+            maxWidth: theme.breakpoints.up('lg') ? '1280px' : '100%',
+            width: '100%',
+            marginInline: 'auto'
           }}
         >
           {/* ------------------------------------------- */}
@@ -75,7 +77,7 @@ const FullLayout: React.FC<Props> = ({ children }): JSX.Element => {
           {/* ------------------------------------------- */}
           {/* End Page */}
           {/* ------------------------------------------- */}
-        </Container>
+        </Box>
       </PageWrapper>
     </MainWrapper>
   )

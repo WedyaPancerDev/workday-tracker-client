@@ -3,9 +3,7 @@ import { signOut } from 'next-auth/react'
 
 import useToast from './useToast'
 import { CODE_OK } from '@/configs/http'
-import { useDispatch } from '@/store/Store'
 import { authLogout } from '@/services/auth'
-import { setToken, setProfile, setUsers } from '@/store/apps/DashboardSlice'
 
 interface ILogoutHookReturn {
   handleLogout: () => Promise<void>
@@ -13,21 +11,9 @@ interface ILogoutHookReturn {
 }
 
 const useLogout = (): ILogoutHookReturn => {
-  const dispatch = useDispatch()
   const { showToast } = useToast()
 
   const [isLoadingLogout, setIsLoadingLogout] = useState<boolean>(false)
-
-  const resetGlobalState = (): void => {
-    dispatch(setToken(''))
-    dispatch(setProfile(null))
-    dispatch(
-      setUsers({
-        id: '',
-        role: ''
-      })
-    )
-  }
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -36,7 +22,6 @@ const useLogout = (): ILogoutHookReturn => {
 
       if (response?.code === CODE_OK) {
         await signOut()
-        resetGlobalState()
       }
 
       setIsLoadingLogout(false)

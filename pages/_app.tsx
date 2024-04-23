@@ -5,11 +5,10 @@ import { useRouter } from 'next/router'
 import { Toaster } from 'react-hot-toast'
 import NextNProgress from 'nextjs-progressbar'
 import { SessionProvider } from 'next-auth/react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { Box, CircularProgress } from '@mui/material'
-import { setTimeout, clearTimeout } from 'worker-timers'
 import { CacheProvider, type EmotionCache } from '@emotion/react'
 
 import Store from '@/store/Store'
@@ -31,22 +30,20 @@ const layouts: any = {
   Blank: BlankLayout
 }
 
-const MyApp = (props: MyAppProps): JSX.Element => {
-  const refTimeout = useRef<ReturnType<typeof setTimeout> | number>(0)
+let isTimeout: ReturnType<typeof setTimeout>
 
+const MyApp = (props: MyAppProps): JSX.Element => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    if (refTimeout.current) clearTimeout(refTimeout.current as number)
-
     const handleStart = (url: string): void => {
       url !== router.asPath && setIsLoading(true)
     }
 
     const handleComplete = (url: string): void => {
       url === router.asPath &&
-        (refTimeout.current = setTimeout(() => {
+        (isTimeout = setTimeout(() => {
           setIsLoading(false)
         }, 500))
     }
@@ -56,6 +53,8 @@ const MyApp = (props: MyAppProps): JSX.Element => {
     router.events.on('routeChangeError', handleComplete)
 
     return () => {
+      clearTimeout(isTimeout)
+
       router.events.off('routeChangeStart', handleStart)
       router.events.off('routeChangeComplete', handleComplete)
       router.events.off('routeChangeError', handleComplete)

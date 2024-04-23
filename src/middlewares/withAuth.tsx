@@ -1,10 +1,17 @@
-import { getToken } from 'next-auth/jwt'
+import type { Roles } from '@/types/role'
+import { type JWT, getToken } from 'next-auth/jwt'
 import {
   type NextMiddleware,
   type NextRequest,
   type NextFetchEvent,
   NextResponse
 } from 'next/server'
+
+interface ICurrentResponse {
+  id: string
+  token: string
+  role: Roles
+}
 
 export default function withAuth(
   middleware: NextMiddleware,
@@ -14,10 +21,10 @@ export default function withAuth(
     const pathname = req.nextUrl.pathname
 
     if (requireAuth.includes(pathname)) {
-      const token = await getToken({
+      const token = (await getToken({
         req,
         secret: process.env.NEXTAUTH_SECRET
-      })
+      })) as JWT & ICurrentResponse
 
       if (!token) {
         const url = new URL('/login', req.url)

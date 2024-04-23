@@ -3,6 +3,37 @@ import { Grid, Box } from '@mui/material'
 import AppLayout from '@/components/AppLayout'
 import AuthLogin from '@/components/Form/AuthLogin'
 import Logo from '@/components/Icon/Logo'
+import { AuthOption } from '@/utils/next-auth'
+import type { GetServerSidePropsContext } from 'next'
+import { getServerSession } from 'next-auth'
+
+interface SessionNewProps {
+  id: string
+  token: string
+}
+
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+): Promise<any> => {
+  const session = (await getServerSession(
+    context.req,
+    context.res,
+    AuthOption
+  )) as SessionNewProps
+
+  if (session?.token) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}
 
 const Login = (): JSX.Element => {
   return (

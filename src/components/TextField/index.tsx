@@ -1,9 +1,14 @@
 import { styled } from '@mui/material/styles'
 import { TextField, type TextFieldProps } from '@mui/material'
+import { forwardRef } from 'react'
 
-const InputTextField = styled((props: TextFieldProps) => (
-  <TextField {...props} />
-))(({ theme }) => ({
+const CustomInputTextField = forwardRef<HTMLInputElement, TextFieldProps>(
+  (props, ref) => {
+    return <TextField ref={ref} {...props} />
+  }
+)
+
+const StyledInputTextField = styled(CustomInputTextField)(({ theme }) => ({
   '& .MuiOutlinedInput-input::-webkit-input-placeholder': {
     color: theme.palette.text.secondary,
     opacity: '0.8'
@@ -17,4 +22,6 @@ const InputTextField = styled((props: TextFieldProps) => (
   }
 }))
 
-export default InputTextField
+CustomInputTextField.displayName = 'CustomInputTextField'
+
+export default StyledInputTextField

@@ -128,7 +128,7 @@ const Profile = (): JSX.Element => {
             }}
             fullWidth
           >
-            Logout
+            {isLoadingLogout ? 'Memproses...' : 'Keluar'}
           </Button>
         </Box>
       </Menu>

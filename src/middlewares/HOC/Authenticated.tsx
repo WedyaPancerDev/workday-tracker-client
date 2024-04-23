@@ -60,9 +60,10 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
       }
     }
 
+    setTokenBearer(token)
+
     useEffect(() => {
       if (token && users?.id !== '' && users?.role !== '') {
-        setTokenBearer(token)
         setIsAlreadySave(true)
 
         dispatch(setToken(token))
@@ -76,10 +77,10 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
     }, [token, users.id, users.role])
 
     useEffect(() => {
-      if (isAlreadySave && !dashboard?.profile && token) {
+      if (isAlreadySave && !dashboard?.profile) {
         getProfileUser()
       }
-    }, [isAlreadySave, dashboard?.profile, token])
+    }, [isAlreadySave, dashboard?.profile])
 
     return <WrappedComponent {...props} />
   }
