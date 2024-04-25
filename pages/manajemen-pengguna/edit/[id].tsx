@@ -27,8 +27,6 @@ const formSchema = yup.object().shape({
   email: yup.string().email('Email tidak valid').required('Email wajib diisi')
 })
 
-let isTimeout: NodeJS.Timeout
-
 const EditManajemenPengguna = (): JSX.Element => {
   const router = useRouter()
   const { id: decryptId = '' } = router.query
@@ -36,13 +34,12 @@ const EditManajemenPengguna = (): JSX.Element => {
   const { showToast } = useToast()
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
-  const [isWaitingTimeout, setIsWaitingTimeout] = useState<boolean>(false)
   const [isSubmitting, setSubmitting] = useState<boolean>(false)
 
   const { mutate } = useSWRConfig()
   const { data: dataDetailUser, isLoading } = useSWR<
     ApiResponse<IDetailUserResponse>
-  >(isWaitingTimeout ? `/users/${decryptId as string}` : null, fetcher)
+  >(`/users/${decryptId as string}`, fetcher)
 
   const { control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
@@ -83,16 +80,6 @@ const EditManajemenPengguna = (): JSX.Element => {
       setSubmitting(false)
     }
   }
-
-  useEffect(() => {
-    isTimeout = setTimeout(() => {
-      setIsWaitingTimeout(true)
-    }, 600)
-
-    return () => {
-      clearTimeout(isTimeout)
-    }
-  }, [])
 
   useEffect(() => {
     if (dataDetailUser?.data) {

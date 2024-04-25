@@ -1,5 +1,5 @@
+import type { IEmployeeResponse } from '@/services/employee'
 import type { ApiResponse } from '@/types/apiResponse'
-import type { IUsersResponse } from '@/services/users'
 
 import useSWR from 'swr'
 import Link from 'next/link'
@@ -7,7 +7,6 @@ import { useMemo, useState } from 'react'
 import {
   Box,
   Button,
-  Chip,
   InputAdornment,
   type Theme,
   Typography,
@@ -26,24 +25,22 @@ import { useForm, Controller } from 'react-hook-form'
 import TextField from '@/components/TextField'
 
 import { fetcher } from '@/utils/request'
-import { encryptText } from '@/utils/helpers'
-import { deactiveUserById } from '@/services/users'
+import { deactiveEmployeeById } from '@/services/employee'
 import DeleteConfirmationPopup from '@/components/Popup/DeleteConfirmationPopup'
 
 import 'primereact/resources/primereact.min.css'
 import 'primereact/resources/themes/lara-light-indigo/theme.css'
 
-const ManajemenPenggunaContainer = (): JSX.Element => {
+const ManajemenPegawaiContainer = (): JSX.Element => {
   const router = useRouter()
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   const [isShowDeletePopup, setIsShowDeletePopup] = useState<boolean>(false)
   const [selectedUser, setSelectedUser] = useState<number | null>(null)
 
-  const { data: dataUser, isLoading } = useSWR<ApiResponse<IUsersResponse[]>>(
-    '/users',
-    fetcher
-  )
+  const { data: dataEmployee, isLoading } = useSWR<
+    ApiResponse<IEmployeeResponse[]>
+  >('/employees', fetcher)
 
   const { control, watch } = useForm({
     defaultValues: {
@@ -63,13 +60,13 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
       >
         <Button
           LinkComponent={Link}
-          href="/manajemen-pengguna/create"
+          href="/manajemen-pegawai/create"
           variant="contained"
           size="large"
           sx={{ fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}
         >
           <IconPlus size={20} style={{ marginRight: '2px' }} />
-          <span>Tambah Data Pengguna</span>
+          <span>Tambah Data Pegawai</span>
         </Button>
 
         <Controller
@@ -89,7 +86,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
                     </InputAdornment>
                   )
                 }}
-                placeholder="Cari data pengguna..."
+                placeholder="Cari data pegawai..."
               />
             )
           }}
@@ -117,9 +114,9 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             style={{ fontSize: 12 }}
           />
           <Column
-            header="EMAIL"
+            header="GENDER"
             sortable
-            field="email"
+            field="gender"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
@@ -131,9 +128,23 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             style={{ fontSize: 12 }}
           />
           <Column
-            header="ACCOUNT STATUS"
+            header="PHONE_NUMBER"
             sortable
-            field="account_status"
+            field="phone"
+            alignHeader={'center'}
+            style={{ fontSize: 12 }}
+          />
+          <Column
+            header="AVATAR"
+            sortable
+            field="avatar"
+            alignHeader={'center'}
+            style={{ fontSize: 12 }}
+          />
+          <Column
+            header="JOINED_COMPANY_AT"
+            sortable
+            field="joined_company_at"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
@@ -163,30 +174,30 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
         scrollable
         value={
           searchForm
-            ? dataUser?.data?.filter((user) => {
+            ? dataEmployee?.data?.filter((user) => {
                 return (
                   user?.fullname
                     .toLowerCase()
                     .includes(searchForm.toLowerCase()) ||
-                  user?.email
+                  user?.gender
                     .toLowerCase()
                     .includes(searchForm.toLowerCase()) ||
                   user?.position
                     .toLowerCase()
                     .includes(searchForm.toLowerCase()) ||
-                  user?.account_status
+                  user?.phone_number
                     .toLowerCase()
                     .includes(searchForm.toLowerCase())
                 )
               })
-            : dataUser?.data ?? []
+            : dataEmployee?.data ?? []
         }
         scrollHeight="auto"
         headerColumnGroup={HeaderGroup}
-        tableStyle={{ minWidth: '50rem' }}
-        paginator
         showGridlines
         stripedRows
+        tableStyle={{ minWidth: '50rem' }}
+        paginator
         rows={10}
         header={header}
         rowsPerPageOptions={[5, 10, 20, 30]}
@@ -222,48 +233,49 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             textAlign: 'center',
             padding: '8px 0'
           }}
-          body={(rowData: IUsersResponse) => {
+          body={(rowData: IEmployeeResponse) => {
             return (
               <Box className="table-content">
                 <Typography
                   variant="body1"
                   sx={{
                     fontWeight: 600,
-                    maxWidth: '220px',
+                    maxWidth: '180px',
                     margin: '0 auto',
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis'
                   }}
                 >
-                  {rowData?.fullname ?? '-'}{' '}
+                  {rowData?.fullname ?? '-'}
                 </Typography>
               </Box>
             )
           }}
         ></Column>
         <Column
-          field="email"
-          header="EMAIL"
+          field="gender"
+          header="GENDER"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
           }}
-          body={(rowData: IUsersResponse) => {
+          body={(rowData: IEmployeeResponse) => {
             return (
               <Box className="table-content">
                 <Typography
                   variant="body1"
                   sx={{
                     fontWeight: 600,
-                    maxWidth: '200px',
+                    maxWidth: '80px',
                     margin: '0 auto',
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis'
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize'
                   }}
                 >
-                  {rowData?.email ?? '-'}
+                  {rowData?.gender ?? '-'}
                 </Typography>
               </Box>
             )
@@ -276,14 +288,14 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             textAlign: 'center',
             padding: '8px 0'
           }}
-          body={(rowData: IUsersResponse) => {
+          body={(rowData: IEmployeeResponse) => {
             return (
               <Box className="table-content">
                 <Typography
                   variant="body1"
                   sx={{
                     fontWeight: 600,
-                    maxWidth: '200px',
+                    maxWidth: '80px',
                     margin: '0 auto',
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
@@ -298,20 +310,84 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
           }}
         ></Column>
         <Column
-          field="account_status"
-          header="ACCOUNT STATUS"
+          field="phone"
+          header="PHONE_NUMBER"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
           }}
-          body={(rowData: IUsersResponse) => {
+          body={(rowData: IEmployeeResponse) => {
             return (
               <Box className="table-content">
-                <Chip
-                  color="primary"
-                  sx={{ textTransform: 'capitalize', fontWeight: 600 }}
-                  label={rowData?.account_status ?? '-'}
-                />
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 600,
+                    maxWidth: '200px',
+                    margin: '0 auto',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {rowData?.phone_number ?? '-'}
+                </Typography>
+              </Box>
+            )
+          }}
+        ></Column>
+        <Column
+          field="avatar"
+          header="avatar"
+          bodyStyle={{
+            textAlign: 'center',
+            padding: '8px 0'
+          }}
+          body={(rowData: IEmployeeResponse) => {
+            return (
+              <Box className="table-content">
+                <Typography
+                  target="_blank"
+                  component={Link}
+                  href={rowData?.avatar || '/'}
+                  sx={{
+                    fontWeight: 700,
+                    color: '#4b5563',
+                    textDecoration: 'underline',
+                    '&:hover': { textDecoration: 'none' }
+                  }}
+                >
+                  Lihat
+                </Typography>
+              </Box>
+            )
+          }}
+        ></Column>
+        <Column
+          field="joined_company_at"
+          header="JOINED_COMPANY_AT"
+          bodyStyle={{
+            textAlign: 'center',
+            padding: '8px 0'
+          }}
+          body={(rowData: IEmployeeResponse) => {
+            return (
+              <Box className="table-content">
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 600,
+                    maxWidth: '180px',
+                    margin: '0 auto',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {rowData?.joined_company_at ?? '-'}
+                </Typography>
               </Box>
             )
           }}
@@ -332,7 +408,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
                   color="warning"
                   onClick={() => {
                     router.push(
-                      `/manajemen-pengguna/edit/${encryptText(String(rowData.uuid))}`
+                      `/manajemen-pegawai/edit/${String(rowData.uuid)}`
                     )
                   }}
                   variant="contained"
@@ -361,11 +437,11 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
 
       {selectedUser && (
         <DeleteConfirmationPopup
-          url="/users"
+          url="/employees"
           title="Pengguna"
           id={selectedUser}
           open={isShowDeletePopup}
-          onDelete={deactiveUserById}
+          onDelete={deactiveEmployeeById}
           handleClose={() => {
             setSelectedUser(null)
             setIsShowDeletePopup((prev) => !prev)
@@ -376,4 +452,4 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
   )
 }
 
-export default ManajemenPenggunaContainer
+export default ManajemenPegawaiContainer

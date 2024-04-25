@@ -1,5 +1,5 @@
 import { useEffect, useState, type FC } from 'react'
-import type { Session, User } from 'next-auth'
+import { type Session, type User } from 'next-auth'
 import { useSession } from 'next-auth/react'
 
 import useToast from '@/hooks/useToast'
@@ -8,6 +8,8 @@ import { setTokenBearer } from '@/utils/axios'
 import { authMe, type ILoginResponse } from '@/services/auth'
 import { useDispatch, useSelector, type AppState } from '@/store/Store'
 import { setToken, setUsers, setProfile } from '@/store/apps/DashboardSlice'
+
+import { saveTokenToCookie } from '@/utils/cookies'
 
 export interface AuthenticatedPageProps {
   user?: User
@@ -60,13 +62,14 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
       }
     }
 
-    setTokenBearer(token)
+    saveTokenToCookie(token)
 
     useEffect(() => {
       if (token && users?.id !== '' && users?.role !== '') {
-        setIsAlreadySave(true)
-
+        setTokenBearer(token)
         dispatch(setToken(token))
+
+        setIsAlreadySave(true)
         dispatch(
           setUsers({
             ...dashboard.users,

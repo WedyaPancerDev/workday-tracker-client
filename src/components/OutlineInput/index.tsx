@@ -4,9 +4,15 @@ import { forwardRef } from 'react'
 import { styled } from '@mui/material/styles'
 import { OutlinedInput } from '@mui/material'
 
-const CustomOutlinedInput = forwardRef<HTMLInputElement, InputProps>(
+interface NewProps extends InputProps {
+  enableAutoFocus?: boolean
+}
+
+const CustomOutlinedInput = forwardRef<HTMLInputElement, NewProps>(
   (props, ref) => {
-    return <OutlinedInput ref={ref} {...props} />
+    return (
+      <OutlinedInput autoFocus={props?.enableAutoFocus} ref={ref} {...props} />
+    )
   }
 )
 

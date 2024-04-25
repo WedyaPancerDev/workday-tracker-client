@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 import Select from 'react-select'
 import { useRouter } from 'next/router'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 
@@ -43,14 +43,10 @@ const formSchema = yup.object().shape({
   employee_id: yup.object().required('ID Karyawan wajib diisi')
 })
 
-let isTimeout: NodeJS.Timeout
-
 const CreateManajemenPengguna = (): JSX.Element => {
   const router = useRouter()
   const { showToast } = useToast()
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
-
-  const [isWaitingTimeout, setIsWaitingTimeout] = useState<boolean>(false)
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [isSubmitting, setSubmitting] = useState<boolean>(false)
@@ -58,7 +54,7 @@ const CreateManajemenPengguna = (): JSX.Element => {
   const { mutate } = useSWRConfig()
   const { data: dataIsNotRegisteredEmployees, isLoading } = useSWR<
     ApiResponse<IEmployeeResponse[]>
-  >(isWaitingTimeout ? '/not-registered-employees' : null, fetcher)
+  >('/not-registered-employees', fetcher)
 
   const { control, handleSubmit, watch } = useForm({
     defaultValues: {
@@ -104,16 +100,6 @@ const CreateManajemenPengguna = (): JSX.Element => {
       setSubmitting(false)
     }
   }
-
-  useEffect(() => {
-    isTimeout = setTimeout(() => {
-      setIsWaitingTimeout(true)
-    }, 600)
-
-    return () => {
-      clearTimeout(isTimeout)
-    }
-  }, [])
 
   return (
     <Fragment>

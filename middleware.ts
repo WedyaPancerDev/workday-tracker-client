@@ -11,7 +11,11 @@ export default withAuth(mainMiddleware, [
   '/dashboard',
   '/rekap-absensi',
   '/manajemen-pegawai',
+  '/manajemen-pegawai/create',
+  '/manajemen-pegawai/edit',
   '/manajemen-pengguna',
+  '/manajemen-pengguna/create',
+  '/manajemen-pengguna/edit',
   '/cuti-pegawai',
   '/chat-room'
 ])

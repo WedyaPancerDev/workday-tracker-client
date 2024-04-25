@@ -3,9 +3,9 @@ import type { AppProps } from 'next/app'
 import { Provider } from 'react-redux'
 import { useRouter } from 'next/router'
 import { Toaster } from 'react-hot-toast'
+import { useEffect, useState } from 'react'
 import NextNProgress from 'nextjs-progressbar'
 import { SessionProvider } from 'next-auth/react'
-import { useEffect, useState } from 'react'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { Box, CircularProgress } from '@mui/material'
@@ -26,7 +26,7 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache
 }
 
-const layouts: any = {
+const layouts: Record<string, any> = {
   Blank: BlankLayout
 }
 

@@ -32,7 +32,7 @@ const ManajemenPengguna = (): JSX.Element => {
           </Typography>
           <BasicBreadcrumbs
             titleTo="Manajemen Pengguna"
-            linkTo="/materi-pelatihan"
+            linkTo="/manajemen-pengguna"
           />
         </Box>
 

@@ -2,6 +2,7 @@ import type { ApiResponse } from '@/types/apiResponse'
 
 import axios, { type AxiosError, type AxiosInstance } from 'axios'
 import { exceptionResponse } from './exception'
+import { getCurrentToken } from './cookies'
 import { CODE_OK } from '@/configs/http'
 
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? ''
@@ -40,8 +41,11 @@ const instance = axios.create({
   }
 })
 
+const currentToken = getCurrentToken() ?? ''
+instance.defaults.headers.common.Authorization = `Bearer ${currentToken}`
+
 export const setTokenBearer = (token: string): void => {
-  instance.defaults.headers.common.Authorization = `Bearer ${token}`
+  instance.defaults.headers.common.Authorization = `Bearer ${currentToken || token}`
 }
 
 handleUseInterceptors(instance)

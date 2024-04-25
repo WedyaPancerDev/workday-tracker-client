@@ -19,8 +19,8 @@ export interface IEmployeeResponse {
 
 export interface IEmployeePayload {
   fullname: string
-  gender: 'laki-laki' | 'perempuan'
-  position: Roles
+  gender: 'laki-laki' | 'perempuan' | string
+  position: Roles | string
   phone_number: string
   avatar: string | null
   address: string
@@ -80,7 +80,7 @@ export const deactiveEmployeeById = async (
   employeeId: string
 ): Promise<ApiResponse<null>> => {
   try {
-    const { data } = await axios.get(`/employees/${employeeId}`)
+    const { data } = await axios.delete(`/employees/${employeeId}`)
 
     return data as ApiResponse<null>
   } catch (error) {

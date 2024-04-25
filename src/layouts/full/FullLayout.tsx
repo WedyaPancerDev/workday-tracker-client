@@ -1,4 +1,4 @@
-import { styled, useTheme, Box, Container } from '@mui/material'
+import { styled, useTheme, Box } from '@mui/material'
 import { useSelector, type AppState } from '../../store/Store'
 import Header from './vertical/header/Header'
 import Sidebar from './vertical/sidebar/Sidebar'

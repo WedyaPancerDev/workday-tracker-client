@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactQuill, { type ReactQuillProps } from 'react-quill'
 import { Box } from '@mui/material'
 

@@ -29,6 +29,7 @@ const SelectedFilePreview = ({
         <Button
           color="inherit"
           variant="text"
+          sx={{ fontWeight: 600, ':hover': { backgroundColor: '#f3f4f6' } }}
           onClick={() => {
             window.open(linkUrl, '_blank')
           }}
