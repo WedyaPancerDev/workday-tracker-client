@@ -5,7 +5,7 @@ import { useSelector, type AppState } from '@/store/Store'
 
 interface Props {
   children: JSX.Element | JSX.Element[]
-  sx: CSSProperties
+  sx?: CSSProperties
 }
 
 const AppCard = ({ children, sx }: Props): JSX.Element => {
