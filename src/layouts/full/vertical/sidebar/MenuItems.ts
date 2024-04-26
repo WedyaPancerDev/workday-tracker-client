@@ -52,16 +52,16 @@ export const AdminMenuItems: MenuitemsType[] = [
   },
   {
     id: uniqueId(10),
-    title: 'Rekap Absensi',
-    icon: IconReport,
-    href: '/rekap-absensi',
+    title: 'Absensi Pegawai',
+    icon: IconClock,
+    href: '/absensi-pegawai',
     chipColor: 'secondary'
   },
   {
     id: uniqueId(10),
-    title: 'Absensi Pegawai',
-    icon: IconClock,
-    href: '/absensi-pegawai',
+    title: 'Rekap Absensi',
+    icon: IconReport,
+    href: '/rekap-absensi',
     chipColor: 'secondary'
   },
   {

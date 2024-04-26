@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from 'react'
 import { type Session, type User } from 'next-auth'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 import useToast from '@/hooks/useToast'
 import { CODE_OK } from '@/configs/http'
@@ -20,6 +20,7 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
 ): FC<P> => {
   const AuthenticatedPage = (props: P): JSX.Element | null => {
     const { showToast } = useToast()
+
     const dashboard = useSelector((state: AppState) => state.dashboard)
     const dispatch = useDispatch()
 
@@ -49,6 +50,17 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
           return
         }
 
+        if (response?.message === 'Unauthenticated.') {
+          await signOut()
+
+          showToast({
+            message: 'Akun Anda tidak terautentikasi. Silahkan login kembali',
+            type: 'error'
+          })
+
+          return
+        }
+
         showToast({
           message: 'Failed to get profile user',
           type: 'error'
@@ -56,7 +68,7 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
       } catch (error) {
         console.error({ error })
         showToast({
-          message: 'Failed to get profile user',
+          message: 'Failed to get profile user jos',
           type: 'error'
         })
       }
