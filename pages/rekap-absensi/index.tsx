@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/quotes */
 import * as yup from 'yup'
 import moment from 'moment'
 import { Fragment, useState } from 'react'
@@ -8,14 +7,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import {
-  Box,
-  type Theme,
-  Typography,
-  useMediaQuery,
-  type TextFieldProps,
-  Button
-} from '@mui/material'
+import { Box, Typography, type TextFieldProps, Button } from '@mui/material'
 
 import SEO from '@/components/SEO'
 import CustomFormLabel from '@/components/FormLabel'
@@ -28,7 +20,8 @@ import { CODE_OK } from '@/configs/http'
 import useToast from '@/hooks/useToast'
 
 const ManajemenRekapAbsensiContainer = dynamic(
-  async () => await import('@/containers/ManajemenRekapAbsensiContainer'),
+  async () =>
+    await import('@/containers/ManajemenRekapAbsensiContainer'),
   { ssr: false }
 )
 
@@ -39,6 +32,7 @@ const formSchema = yup.object().shape({
     .required('Tanggal Selesai harus diisi')
     .test(
       'access_exam_expire_date_is_not_valid',
+      // eslint-disable-next-line @typescript-eslint/quotes
       "Tanggal yang di-inputkan kurang dari 'Tanggal mulai'",
       (value, context) => {
         const valueDate = value ?? ''
@@ -53,7 +47,6 @@ const formSchema = yup.object().shape({
 
 const RekapPegawai = (): JSX.Element => {
   const { showToast } = useToast()
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
@@ -96,9 +89,11 @@ const RekapPegawai = (): JSX.Element => {
     }
   }
 
+  const isDisabled = Object.values(form).some((value) => value === '')
+
   return (
     <Fragment>
-      <SEO title="Rekap Pegawai | Workday Tracker" />
+      <SEO title="Rekap Absensi | Workday Tracker" />
 
       <Box component="section">
         <Box display="flex" flexDirection="column">
@@ -109,17 +104,12 @@ const RekapPegawai = (): JSX.Element => {
             letterSpacing="-0.01em"
             mb={2}
           >
-            Informasi Rekap Pegawai
+            Informasi Rekap Absensi
           </Typography>
-          <BasicBreadcrumbs titleTo="Rekap Pegawai" linkTo="/rekap-pegawai" />
+          <BasicBreadcrumbs titleTo="Rekap Absensi" linkTo="/rekap-absensi" />
         </Box>
 
-        <Box
-          marginTop={8}
-          gap="20px"
-          display="grid"
-          gridTemplateColumns={lgUp ? '1fr 2fr' : '1fr'}
-        >
+        <Box marginTop={8} gap="20px" display="grid" gridTemplateColumns="1fr">
           <Box
             component="form"
             className="form-control"
@@ -269,11 +259,17 @@ const RekapPegawai = (): JSX.Element => {
                 marginTop: 4
               }}
             >
-              Tampilkan Rekap Absensi
+              Tampilkan Seluruh Rekap Absensi
             </Button>
           </Box>
           <Box sx={{ overflowX: 'scroll' }}>
-            <ManajemenRekapAbsensiContainer />
+            <ManajemenRekapAbsensiContainer
+              isEmpty={isDisabled}
+              recapDate={{
+                startDateCurrent: form.start_date || '',
+                endDateCurrent: form.end_date || ''
+              }}
+            />
           </Box>
         </Box>
       </Box>

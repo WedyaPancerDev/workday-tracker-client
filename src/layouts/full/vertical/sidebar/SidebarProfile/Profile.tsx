@@ -1,19 +1,7 @@
-import {
-  Box,
-  Avatar,
-  Typography,
-  IconButton,
-  Tooltip,
-  useMediaQuery
-} from '@mui/material'
-import { IconPower } from '@tabler/icons-react'
+import { Box, Avatar, Typography, useMediaQuery } from '@mui/material'
 import { type AppState, useSelector } from '@/store/Store'
 
-import useLogout from '@/hooks/useLogout'
-
 export const Profile = (): JSX.Element => {
-  const { handleLogout, isLoadingLogout } = useLogout()
-
   const customizer = useSelector((state: AppState) => state.customizer)
   const dashboard = useSelector((state: AppState) => state.dashboard)
 
@@ -49,22 +37,6 @@ export const Profile = (): JSX.Element => {
             <Typography variant="caption" sx={{ textTransform: 'capitalize' }}>
               {dashboard?.profile?.position || '...'}
             </Typography>
-          </Box>
-          <Box sx={{ ml: 'auto' }}>
-            <Tooltip title="Logout" placement="top">
-              <IconButton
-                type="button"
-                onClick={() => {
-                  handleLogout()
-                }}
-                size="small"
-                color="primary"
-                aria-label="logout"
-                disabled={isLoadingLogout}
-              >
-                <IconPower size="20" />
-              </IconButton>
-            </Tooltip>
           </Box>
         </>
       ) : (

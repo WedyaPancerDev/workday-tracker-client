@@ -25,7 +25,17 @@ import { type IEmployeeResponse } from '@/services/employee'
 import 'primereact/resources/primereact.min.css'
 import 'primereact/resources/themes/lara-light-indigo/theme.css'
 
-const ManajemenRekapAbsensiContainer = (): JSX.Element => {
+interface IManajemenRekapPegawai {
+  recapDate: {
+    startDateCurrent: string
+    endDateCurrent: string
+  }
+  isEmpty: boolean
+}
+const ManajemenRekapAbsensiContainer = ({
+  isEmpty,
+  recapDate: { endDateCurrent = '', startDateCurrent = '' }
+}: IManajemenRekapPegawai): JSX.Element => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   const { data: dataEmployee, isLoading } = useSWR<
@@ -191,6 +201,7 @@ const ManajemenRekapAbsensiContainer = (): JSX.Element => {
                   color="inherit"
                   sx={{ fontWeight: 700, fontSize: '14px' }}
                   variant="contained"
+                  disabled={isEmpty}
                 >
                   <IconUser size={16} style={{ marginRight: '4px' }} />
                   Lihat Rekap

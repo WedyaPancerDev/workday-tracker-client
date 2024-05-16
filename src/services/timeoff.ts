@@ -72,7 +72,7 @@ export const updateTimeoffEmployee = async (
 }
 
 export const updateStatusTimeoffEmployee = async (
-  payload: { status: 'approved' | 'rejected' | 'pending' },
+  payload: { status: 'approved' | 'rejected' },
   employeeId: string
 ): Promise<ApiResponse<null>> => {
   try {

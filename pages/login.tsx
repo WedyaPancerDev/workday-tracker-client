@@ -6,6 +6,9 @@ import Logo from '@/components/Icon/Logo'
 import { AuthOption } from '@/utils/next-auth'
 import type { GetServerSidePropsContext } from 'next'
 import { getServerSession } from 'next-auth'
+import { useEffect } from 'react'
+import { getCurrentToken, removeTokenFromCookie } from '@/utils/cookies'
+import { useSession } from 'next-auth/react'
 
 interface SessionNewProps {
   id: string
@@ -36,6 +39,17 @@ export const getServerSideProps = async (
 }
 
 const Login = (): JSX.Element => {
+  const { status } = useSession()
+  const currentToken = getCurrentToken()
+  const conditionToken =
+    !currentToken || currentToken === '' || currentToken === 'undefined'
+
+  useEffect(() => {
+    if (conditionToken || status === 'unauthenticated') {
+      removeTokenFromCookie()
+    }
+  }, [conditionToken, status])
+
   return (
     <AppLayout title="Workday Tracker - Login">
       <Grid

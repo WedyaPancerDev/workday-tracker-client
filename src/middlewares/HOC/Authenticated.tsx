@@ -9,7 +9,7 @@ import { authMe, type ILoginResponse } from '@/services/auth'
 import { useDispatch, useSelector, type AppState } from '@/store/Store'
 import { setToken, setUsers, setProfile } from '@/store/apps/DashboardSlice'
 
-import { saveTokenToCookie } from '@/utils/cookies'
+import { getCurrentToken, saveTokenToCookie } from '@/utils/cookies'
 
 export interface AuthenticatedPageProps {
   user?: User
@@ -20,13 +20,14 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
 ): FC<P> => {
   const AuthenticatedPage = (props: P): JSX.Element | null => {
     const { showToast } = useToast()
+    const { data: dataUser } = useSession()
+
+    const currentTokenCookie = getCurrentToken()
 
     const dashboard = useSelector((state: AppState) => state.dashboard)
     const dispatch = useDispatch()
 
     const [isAlreadySave, setIsAlreadySave] = useState<boolean>(false)
-
-    const { data: dataUser } = useSession()
 
     const token = (dataUser as Session & ILoginResponse)?.token
     const users = {
@@ -74,12 +75,11 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
       }
     }
 
-    saveTokenToCookie(token)
-
     useEffect(() => {
       if (token && users?.id !== '' && users?.role !== '') {
         setTokenBearer(token)
         dispatch(setToken(token))
+        saveTokenToCookie(token)
 
         setIsAlreadySave(true)
         dispatch(
@@ -92,10 +92,14 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
     }, [token, users.id, users.role])
 
     useEffect(() => {
-      if (isAlreadySave && !dashboard?.profile) {
+      if (
+        isAlreadySave &&
+        !dashboard?.profile &&
+        (currentTokenCookie || currentTokenCookie !== '')
+      ) {
         getProfileUser()
       }
-    }, [isAlreadySave, dashboard?.profile])
+    }, [isAlreadySave, dashboard?.profile, currentTokenCookie])
 
     return <WrappedComponent {...props} />
   }

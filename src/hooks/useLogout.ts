@@ -12,6 +12,7 @@ interface ILogoutHookReturn {
 }
 
 const useLogout = (): ILogoutHookReturn => {
+  // const router = useRouter()
   const { showToast } = useToast()
 
   const [isLoadingLogout, setIsLoadingLogout] = useState<boolean>(false)
