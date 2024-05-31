@@ -38,6 +38,15 @@ interface IDetailCutiPegawaiContainerProps {
   isLoading: boolean
 }
 
+const listMessage: Record<string, string> = {
+  annual: 'Cuti Tahunan',
+  sick_without_docs: 'Cuti Sakit Tanpa Surat Dokter',
+  sick_with_docs: 'Cuti Sakit dengan Surat Dokter',
+  holiday: 'Cuti Liburan',
+  unpaid: 'Cuti Tidak Dibayar',
+  special_permit: 'Cuti Khusus'
+}
+
 const DetailCutiPegawaiContainer = ({
   isLoading,
   timeOffEmployee
@@ -141,35 +150,35 @@ const DetailCutiPegawaiContainer = ({
             style={{ fontSize: 12 }}
           />
           <Column
-            header="TYPE"
+            header="TIPE CUTI"
             sortable
             field="type"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="START DATE"
+            header="CUTI DIMULAI"
             sortable
             field="start_date"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="END DATE"
+            header="CUTI BERAKHIR"
             sortable
             field="end_date"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="DESCRIPTION"
+            header="KETERANGAN"
             sortable
             field="description"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="DOCUMENT"
+            header="DOKUMEN"
             sortable
             field="document"
             alignHeader={'center'}
@@ -183,13 +192,19 @@ const DetailCutiPegawaiContainer = ({
             style={{ fontSize: 12 }}
           />
           <Column
-            header="TOTAL DAYS"
+            header="TOTAL CUTI"
             field="total_days"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="ACTION"
+            header="CUTI DIAJUKAN"
+            field="timeoff_created_at"
+            alignHeader={'center'}
+            style={{ fontSize: 12 }}
+          />
+          <Column
+            header="AKSI"
             field="action"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
@@ -279,7 +294,7 @@ const DetailCutiPegawaiContainer = ({
                     textTransform: 'capitalize'
                   }}
                 >
-                  {rowData?.type ?? '-'}
+                  {listMessage[rowData?.type] ?? '-'}
                 </Typography>
               </Box>
             )
@@ -301,7 +316,7 @@ const DetailCutiPegawaiContainer = ({
                     fontWeight: 600
                   }}
                 >
-                  {moment(rowData?.start_date).format('YYYY / MM / DD') ?? '-'}
+                  {moment(rowData?.start_date).format('YYYY - MM - DD') ?? '-'}
                 </Typography>
               </Box>
             )
@@ -323,7 +338,7 @@ const DetailCutiPegawaiContainer = ({
                     fontWeight: 600
                   }}
                 >
-                  {moment(rowData?.end_date).format('YYYY / MM / DD') ?? '-'}
+                  {moment(rowData?.end_date).format('YYYY - MM - DD') ?? '-'}
                 </Typography>
               </Box>
             )
@@ -440,6 +455,31 @@ const DetailCutiPegawaiContainer = ({
           }}
         ></Column>
         <Column
+          field="timeoff_created_at"
+          header="CUTI DIAJUKAN"
+          bodyStyle={{
+            textAlign: 'center',
+            padding: '8px 0'
+          }}
+          body={(rowData: IEmployeeTimeoffResponse) => {
+            return (
+              <Box className="table-content">
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 600,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {moment(rowData?.timeoff_created_at).format(
+                    'YYYY-MM-DD'
+                  ) ?? '-'}
+                </Typography>
+              </Box>
+            )
+          }}
+        ></Column>
+        <Column
           field="action"
           header="ACTION"
           bodyStyle={{
@@ -448,45 +488,67 @@ const DetailCutiPegawaiContainer = ({
           }}
           body={(rowData) => {
             return (
-              <Box display="flex" alignItems="center" px="10px" gap="10px">
-                <Button
-                  fullWidth
-                  size="small"
-                  type="button"
-                  color="primary"
-                  variant="contained"
-                  sx={{ fontWeight: 700 }}
-                  onClick={() => {
-                    updateStatus('approved', rowData?.uuid)
-                  }}
-                  disabled={
-                    rowData?.status === 'approved' ||
-                    rowData?.status === 'rejected' ||
-                    isLoadingUpdateStatus
-                  }
-                >
-                  <IconChecklist size={18} />
-                  Terima
-                </Button>
-                <Button
-                  fullWidth
-                  type="button"
-                  color="error"
-                  size="small"
-                  sx={{ fontWeight: 700, fontSize: '14px' }}
-                  variant="contained"
-                  onClick={() => {
-                    updateStatus('rejected', rowData?.uuid)
-                  }}
-                  disabled={
-                    rowData?.status === 'rejected' ||
-                    rowData?.status === 'approved' ||
-                    isLoadingUpdateStatus
-                  }
-                >
-                  <IconX size={18} />
-                  Tolak
-                </Button>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                px="10px"
+                gap="10px"
+              >
+                {rowData?.status === 'pending' ? (
+                  <>
+                    <Button
+                      fullWidth
+                      size="small"
+                      type="button"
+                      color="primary"
+                      variant="contained"
+                      sx={{ fontWeight: 700 }}
+                      onClick={() => {
+                        updateStatus('approved', rowData?.uuid)
+                      }}
+                      disabled={
+                        rowData?.status === 'approved' ||
+                        rowData?.status === 'rejected' ||
+                        isLoadingUpdateStatus
+                      }
+                    >
+                      <IconChecklist size={18} />
+                      Terima
+                    </Button>
+                    <Button
+                      fullWidth
+                      type="button"
+                      color="error"
+                      size="small"
+                      sx={{ fontWeight: 700, fontSize: '14px' }}
+                      variant="contained"
+                      onClick={() => {
+                        updateStatus('rejected', rowData?.uuid)
+                      }}
+                      disabled={
+                        rowData?.status === 'rejected' ||
+                        rowData?.status === 'approved' ||
+                        isLoadingUpdateStatus
+                      }
+                    >
+                      <IconX size={18} />
+                      Tolak
+                    </Button>
+                  </>
+                ) : (
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      textAlign: 'center',
+                      fontSize: '12px'
+                    }}
+                  >
+                    {rowData?.status}
+                  </Typography>
+                )}
               </Box>
             )
           }}

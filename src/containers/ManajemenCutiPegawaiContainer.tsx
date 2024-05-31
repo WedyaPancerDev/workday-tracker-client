@@ -221,11 +221,6 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
                   variant="body1"
                   sx={{
                     fontWeight: 600,
-                    maxWidth: '80px',
-                    margin: '0 auto',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
                     textTransform: 'capitalize'
                   }}
                 >
@@ -276,11 +271,6 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
                   variant="body1"
                   sx={{
                     fontWeight: 600,
-                    maxWidth: '180px',
-                    margin: '0 auto',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
                     textTransform: 'capitalize'
                   }}
                 >

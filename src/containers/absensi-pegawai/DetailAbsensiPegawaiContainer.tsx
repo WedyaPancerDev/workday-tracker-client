@@ -2,29 +2,17 @@ import type { IEmployeePresenceResponse } from '@/services/employee-presence'
 
 import Link from 'next/link'
 import { useMemo } from 'react'
-import {
-  Box,
-  InputAdornment,
-  type Theme,
-  Typography,
-  useMediaQuery,
-  Chip
-} from '@mui/material'
-import { IconSearch } from '@tabler/icons-react'
+import { Box, Typography } from '@mui/material'
 
 import { Row } from 'primereact/row'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { ColumnGroup } from 'primereact/columngroup'
 
-import { useForm, Controller } from 'react-hook-form'
-
-import TextField from '@/components/TextField'
-
 import 'primereact/resources/primereact.min.css'
 import 'primereact/resources/themes/lara-light-indigo/theme.css'
-
-import { useRouter } from 'next/router'
+import { generateGoogleMapsLink } from '@/utils/helpers'
+import moment from 'moment'
 
 interface IDetailCutiPegawaiContainerProps {
   presenceEmployee: IEmployeePresenceResponse[]
@@ -35,46 +23,6 @@ const DetailCutiPegawaiContainer = ({
   isLoading,
   presenceEmployee
 }: IDetailCutiPegawaiContainerProps): JSX.Element => {
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
-
-  const { control, watch } = useForm({
-    defaultValues: {
-      search: ''
-    }
-  })
-
-  const { search: searchForm } = watch()
-
-  const renderHeader = (): JSX.Element => {
-    return (
-      <Box display="flex" justifyContent="space-between" alignItems={'center'}>
-        <Controller
-          name="search"
-          control={control}
-          render={({ field }) => {
-            return (
-              <TextField
-                {...field}
-                type="text"
-                fullWidth={!lgUp}
-                sx={{ marginTop: lgUp ? 0 : 1, fontWeight: 600 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <IconSearch size={20} />
-                    </InputAdornment>
-                  )
-                }}
-                placeholder="Cari data absensi..."
-              />
-            )
-          }}
-        />
-      </Box>
-    )
-  }
-
-  const header = renderHeader()
   const HeaderGroup = useMemo(() => {
     return (
       <ColumnGroup>
@@ -86,44 +34,51 @@ const DetailCutiPegawaiContainer = ({
             style={{ fontSize: 12 }}
           />
           <Column
-            header="Jam Masuk"
+            header="JAM MASUK"
             sortable
             field="clock_in"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="Lokasi Masuk"
+            header="LOKASI MASUK"
             sortable
             field="location_in"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="Foto Masuk"
+            header="FOTO MASUK"
             sortable
             field="photo_in"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="Jam Keluar"
+            header="JAM KELUAR"
             sortable
             field="clock_out"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="Lokasi Keluar"
+            header="LOKASI KELUAR"
             sortable
             field="location_out"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="Foto Keluar"
+            header="FOTO KELUAR"
             sortable
             field="photo_out"
+            alignHeader={'center'}
+            style={{ fontSize: 12 }}
+          />
+          <Column
+            header="PRESENSI DIBUAT"
+            sortable
+            field="presence_date"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
@@ -140,7 +95,7 @@ const DetailCutiPegawaiContainer = ({
         groupRowsBy="id"
         sortMode="single"
         scrollable
-        value={[]}
+        value={presenceEmployee || []}
         scrollHeight="auto"
         headerColumnGroup={HeaderGroup}
         showGridlines
@@ -148,7 +103,6 @@ const DetailCutiPegawaiContainer = ({
         tableStyle={{ minWidth: '50rem' }}
         paginator
         rows={10}
-        header={header}
         rowsPerPageOptions={[5, 10, 20, 30]}
         style={{
           boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
@@ -175,9 +129,10 @@ const DetailCutiPegawaiContainer = ({
             )
           }}
         ></Column>
+
         <Column
-          field="type"
-          header="TYPE"
+          field="clock_in"
+          header="JAM MASUK"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -191,14 +146,17 @@ const DetailCutiPegawaiContainer = ({
                     fontWeight: 600,
                     textTransform: 'capitalize'
                   }}
-                ></Typography>
+                >
+                  {rowData?.clock_in ?? '-'}
+                </Typography>
               </Box>
             )
           }}
         ></Column>
+
         <Column
-          field="start_date"
-          header="START DATE"
+          field="location_in"
+          header="LOKASI MASUK"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -207,18 +165,31 @@ const DetailCutiPegawaiContainer = ({
             return (
               <Box className="table-content">
                 <Typography
-                  variant="body1"
+                  target="_blank"
+                  component={Link}
+                  href={
+                    generateGoogleMapsLink(
+                      rowData?.latitude_in,
+                      rowData?.longitude_in
+                    ) || '/'
+                  }
                   sx={{
-                    fontWeight: 600
+                    fontWeight: 700,
+                    color: '#4b5563',
+                    textDecoration: 'underline',
+                    '&:hover': { textDecoration: 'none' }
                   }}
-                ></Typography>
+                >
+                  Lihat Lokasi
+                </Typography>
               </Box>
             )
           }}
         ></Column>
+
         <Column
-          field="end_date"
-          header="END DATE"
+          field="photo_in"
+          header="FOTO MASUK"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -227,18 +198,26 @@ const DetailCutiPegawaiContainer = ({
             return (
               <Box className="table-content">
                 <Typography
-                  variant="body1"
+                  target="_blank"
+                  component={Link}
+                  href={rowData?.photo_in || '#'}
                   sx={{
-                    fontWeight: 600
+                    fontWeight: 700,
+                    color: '#4b5563',
+                    textDecoration: 'underline',
+                    '&:hover': { textDecoration: 'none' }
                   }}
-                ></Typography>
+                >
+                  Lihat Foto
+                </Typography>
               </Box>
             )
           }}
         ></Column>
+
         <Column
-          field="description"
-          header="description"
+          field="clock_out"
+          header="JAM KELUAR"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -250,20 +229,19 @@ const DetailCutiPegawaiContainer = ({
                   variant="body1"
                   sx={{
                     fontWeight: 600,
-                    maxWidth: '150px',
-                    margin: '0 auto',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis'
+                    textTransform: 'capitalize'
                   }}
-                ></Typography>
+                >
+                  {rowData?.clock_out ?? '-'}
+                </Typography>
               </Box>
             )
           }}
         ></Column>
+
         <Column
-          field="document"
-          header="DOCUMENT"
+          field="location_out"
+          header="LOKASI KELUAR"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -274,7 +252,15 @@ const DetailCutiPegawaiContainer = ({
                 <Typography
                   target="_blank"
                   component={Link}
-                  href={rowData?.document || '/'}
+                  href={
+                    (rowData?.latitude_out &&
+                      rowData?.longitude_out &&
+                      generateGoogleMapsLink(
+                        rowData?.latitude_out,
+                        rowData?.longitude_out
+                      )) ||
+                    '/'
+                  }
                   sx={{
                     fontWeight: 700,
                     color: '#4b5563',
@@ -282,15 +268,16 @@ const DetailCutiPegawaiContainer = ({
                     '&:hover': { textDecoration: 'none' }
                   }}
                 >
-                  Lihat
+                  Lihat Lokasi
                 </Typography>
               </Box>
             )
           }}
         ></Column>
+
         <Column
-          field="status"
-          header="STATUS"
+          field="photo_out"
+          header="FOTO KELUAR"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -298,23 +285,32 @@ const DetailCutiPegawaiContainer = ({
           body={(rowData: IEmployeePresenceResponse) => {
             return (
               <Box className="table-content">
-                <Chip
-                  label=""
-                  color={'info'}
-                  sx={{ fontWeight: 600, textTransform: 'capitalize' }}
-                />
+                <Typography
+                  target="_blank"
+                  component={Link}
+                  href={rowData?.photo_out || '#'}
+                  sx={{
+                    fontWeight: 700,
+                    color: '#4b5563',
+                    textDecoration: 'underline',
+                    '&:hover': { textDecoration: 'none' }
+                  }}
+                >
+                  Lihat Foto
+                </Typography>
               </Box>
             )
           }}
         ></Column>
+
         <Column
-          field="total_days"
-          header="TOTAL DAYS"
+          field="presence_date"
+          header="PRESENSI DIBUAT"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
           }}
-          body={(rowData) => {
+          body={(rowData: IEmployeePresenceResponse) => {
             return (
               <Box className="table-content">
                 <Typography
@@ -322,26 +318,11 @@ const DetailCutiPegawaiContainer = ({
                   sx={{
                     fontWeight: 600
                   }}
-                ></Typography>
+                >
+                  {moment(rowData?.presence_date).format('YYYY - MM - DD') ??
+                    '-'}
+                </Typography>
               </Box>
-            )
-          }}
-        ></Column>
-        <Column
-          field="action"
-          header="ACTION"
-          bodyStyle={{
-            textAlign: 'center',
-            padding: '8px 0'
-          }}
-          body={(rowData) => {
-            return (
-              <Box
-                display="flex"
-                alignItems="center"
-                px="10px"
-                gap="10px"
-              ></Box>
             )
           }}
         ></Column>
