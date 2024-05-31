@@ -15,7 +15,7 @@ export interface IUsersResponse {
 export interface IUsersPayload {
   email: string
   password: string
-  employee_id: number
+  employee_id: string
 }
 
 export const getUsers = async (): Promise<ApiResponse<IUsersResponse[]>> => {

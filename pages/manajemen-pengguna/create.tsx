@@ -29,8 +29,14 @@ import { fetcher } from '@/utils/request'
 import type { ApiResponse } from '@/types/apiResponse'
 
 interface IEmployeeValue {
-  id: string | number
+  uuid: string | number
   fullname: string
+}
+
+interface IPayloadForm {
+  email: string
+  password: string
+  employee_id: string
 }
 
 const formSchema = yup.object().shape({
@@ -68,12 +74,19 @@ const CreateManajemenPengguna = (): JSX.Element => {
 
   const form = watch()
 
-  const onSubmit = async (): Promise<void> => {
+  const getPayload = (): IPayloadForm => {
     const payload = {
       email: form.email,
       password: form.password,
-      employee_id: Number((form.employee_id as unknown as IEmployeeValue)?.id)
+      employee_id: (form.employee_id as unknown as IEmployeeValue)
+        ?.uuid as string
     }
+
+    return payload
+  }
+
+  const onSubmit = async (): Promise<void> => {
+    const payload = getPayload()
 
     try {
       setSubmitting(true)
@@ -153,7 +166,7 @@ const CreateManajemenPengguna = (): JSX.Element => {
                     {...(field as any)}
                     inputId="pegawai"
                     getOptionLabel={(option) => option.fullname}
-                    getOptionValue={(option) => option.id}
+                    getOptionValue={(option) => option.uuid}
                     classNamePrefix="select"
                     placeholder="Pilih karyawan"
                     options={dataIsNotRegisteredEmployees?.data ?? []}

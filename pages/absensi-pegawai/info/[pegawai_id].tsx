@@ -1,9 +1,8 @@
 import type { ApiResponse } from '@/types/apiResponse'
-import type { IEmployeeResponse } from '@/services/employee'
-import type { IEmployeeTimeoffResponse } from '@/services/timeoff'
+import type { IEmployeePresenceResponse } from '@/services/employee-presence'
 
 import useSWR from 'swr'
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 
@@ -13,9 +12,9 @@ import BasicBreadcrumbs from '@/components/Breadcrumb'
 import { Authenticated } from '@/middlewares/HOC/Authenticated'
 import { Box, type Theme, Typography, useMediaQuery } from '@mui/material'
 
-const DetailCutiPegawaiContainer = dynamic(
+const DetailAbsensiPegawaiContainer = dynamic(
   async () =>
-    await import('@/containers/cuti-pegawai/DetailCutiPegawaiContainer'),
+    await import('@/containers/absensi-pegawai/DetailAbsensiPegawaiContainer'),
   { ssr: false }
 )
 
@@ -23,24 +22,19 @@ const InfoCutiPegawai = (): JSX.Element => {
   const router = useRouter()
   const { pegawai_id: pegawaiId = '' } = router.query
 
-  const { data: dataCutiPegawai, isLoading } = useSWR<
-    ApiResponse<IEmployeeTimeoffResponse[]>
-  >(pegawaiId ? `/timeoff/${pegawaiId as string}` : null, fetcher)
-
-  const { data: dataDetailPegawai, isLoading: isLoadingDetailPegawai } = useSWR<
-    ApiResponse<IEmployeeResponse>
-  >(pegawaiId ? `/employees/${pegawaiId as string}` : null, fetcher)
+  const { data: dataHistoryPresence, isLoading } = useSWR<
+    ApiResponse<IEmployeePresenceResponse[]>
+  >(pegawaiId ? `/history-presences/${pegawaiId as string}` : null, fetcher)
 
   const finalData = {
-    timeoff: dataCutiPegawai?.data || [],
-    employee: dataDetailPegawai?.data || null
+    presences: dataHistoryPresence?.data || []
   }
 
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (
     <Fragment>
-      <SEO title="Detail Cuti Pegawai | Workday Tracker" />
+      <SEO title="Detail Absensi Pegawai | Workday Tracker" />
 
       <Box
         component="section"
@@ -57,28 +51,21 @@ const InfoCutiPegawai = (): JSX.Element => {
             letterSpacing="-0.01em"
             mb={1}
           >
-            Info Cuti Pegawai
+            Info Absensi Pegawai
           </Typography>
           <BasicBreadcrumbs
-            titleTo="Cuti Pegawai"
-            linkTo="/cuti-pegawai"
+            titleTo="Absensi Pegawai"
+            linkTo="/absensi-pegawai"
             subLink={{
-              title: 'Info Cuti Pegawai',
-              link: `/cuti-pegawai/info/${pegawaiId as string}`
+              title: 'Info Absensi Pegawai',
+              link: `/absensi-pegawai/info/${pegawaiId as string}`
             }}
           />
         </Box>
 
-        <Box
-          gap="12px"
-          display="grid"
-          marginTop={lgUp ? 6 : 4}
-          gridTemplateColumns={lgUp ? '1fr 2fr' : 'repeat(1, 1fr)'}
-        ></Box>
-
         <Box component="div" className="table-container">
-          <DetailCutiPegawaiContainer
-            timeOffEmployee={finalData?.timeoff || []}
+          <DetailAbsensiPegawaiContainer
+            timeOffEmployee={[]}
             isLoading={isLoading}
           />
         </Box>
