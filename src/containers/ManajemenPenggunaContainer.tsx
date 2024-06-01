@@ -13,7 +13,12 @@ import {
   Typography,
   useMediaQuery
 } from '@mui/material'
-import { IconPencil, IconPlus, IconSearch } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconPlus,
+  IconSearch,
+  IconTrash
+} from '@tabler/icons-react'
 
 import { Row } from 'primereact/row'
 import { useRouter } from 'next/router'
@@ -141,7 +146,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             header="AKSI"
             field="action"
             alignHeader={'center'}
-            style={{ fontSize: 12, width: lgUp ? '22%' : 0 }}
+            style={{ fontSize: 12, width: lgUp ? '28%' : 0 }}
           />
         </Row>
       </ColumnGroup>
@@ -328,11 +333,12 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
               <Box display="flex" alignItems="center" px="10px" gap="10px">
                 <Button
                   fullWidth
+                  size="small"
                   type="button"
                   color="warning"
                   onClick={() => {
                     router.push(
-                      `/manajemen-pengguna/edit/${encryptText(String(rowData.uuid))}`
+                      `/manajemen-pengguna/edit/${encryptText(rowData?.uuid)}`
                     )
                   }}
                   variant="contained"
@@ -343,6 +349,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
                 </Button>
                 <Button
                   fullWidth
+                  size="small"
                   type="button"
                   color="error"
                   sx={{ fontWeight: 700, fontSize: '14px' }}
@@ -351,7 +358,8 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
                     handleOpenDeletePopup(rowData.uuid)
                   }}
                 >
-                  Hapus
+                  <IconTrash size={18} style={{ flexShrink: 0 }} />
+                  Non-Aktifkan
                 </Button>
               </Box>
             )

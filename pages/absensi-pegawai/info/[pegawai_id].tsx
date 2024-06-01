@@ -87,7 +87,7 @@ const InfoCutiPegawai = (): JSX.Element => {
         component="section"
         sx={{
           width: '100%',
-          maxWidth: lgUp ? '70rem' : '100%'
+          maxWidth: lgUp ? '80rem' : '100%'
         }}
       >
         <Box display="flex" flexDirection="column">

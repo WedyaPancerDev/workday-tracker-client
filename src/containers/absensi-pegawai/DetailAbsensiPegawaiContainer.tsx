@@ -100,7 +100,7 @@ const DetailCutiPegawaiContainer = ({
         headerColumnGroup={HeaderGroup}
         showGridlines
         stripedRows
-        tableStyle={{ minWidth: '50rem' }}
+        tableStyle={{ minWidth: '70rem' }}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 20, 30]}

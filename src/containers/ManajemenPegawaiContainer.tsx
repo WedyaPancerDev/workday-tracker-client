@@ -12,7 +12,7 @@ import {
   Typography,
   useMediaQuery
 } from '@mui/material'
-import { IconPencil, IconPlus, IconSearch } from '@tabler/icons-react'
+import { IconPlus, IconSearch } from '@tabler/icons-react'
 
 import { Row } from 'primereact/row'
 import { useRouter } from 'next/router'
@@ -107,42 +107,42 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
             style={{ fontSize: 12 }}
           />
           <Column
-            header="FULLNAME"
+            header="NAMA LENGKAP"
             sortable
             field="fullname"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="GENDER"
+            header="JENIS KELAMIN"
             sortable
             field="gender"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="POSITION"
+            header="POSISI"
             sortable
             field="position"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="PHONE_NUMBER"
+            header="NOMOR TELEPON"
             sortable
             field="phone"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="AVATAR"
+            header="FOTO PROFIL"
             sortable
             field="avatar"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="JOINED_COMPANY_AT"
+            header="TANGGAL BERGABUNG"
             sortable
             field="joined_company_at"
             alignHeader={'center'}
@@ -228,7 +228,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
         ></Column>
         <Column
           field="fullname"
-          header="FULLNAME"
+          header="NAMA LENGKAP"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -255,7 +255,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
         ></Column>
         <Column
           field="gender"
-          header="GENDER"
+          header="JENIS KELAMIN"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -283,7 +283,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
         ></Column>
         <Column
           field="position"
-          header="POSITION"
+          header="POSISI"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -311,7 +311,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
         ></Column>
         <Column
           field="phone"
-          header="PHONE_NUMBER"
+          header="NOMOR TELEPON"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -339,7 +339,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
         ></Column>
         <Column
           field="avatar"
-          header="avatar"
+          header="FOTO PROFIL"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -366,7 +366,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
         ></Column>
         <Column
           field="joined_company_at"
-          header="JOINED_COMPANY_AT"
+          header="TANGGAL BERGABUNG"
           bodyStyle={{
             textAlign: 'center',
             padding: '8px 0'
@@ -404,30 +404,29 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
               <Box display="flex" alignItems="center" px="10px" gap="10px">
                 <Button
                   fullWidth
+                  size="small"
                   type="button"
                   color="warning"
                   onClick={() => {
-                    router.push(
-                      `/manajemen-pegawai/edit/${String(rowData.uuid)}`
-                    )
+                    router.push(`/manajemen-pegawai/edit/${rowData.uuid}`)
                   }}
                   variant="contained"
-                  sx={{ fontWeight: 700 }}
+                  sx={{ fontWeight: 700, fontSize: '12px' }}
                 >
-                  <IconPencil size={18} />
                   Ubah
                 </Button>
                 <Button
                   fullWidth
+                  size="small"
                   type="button"
                   color="error"
-                  sx={{ fontWeight: 700, fontSize: '14px' }}
+                  sx={{ fontWeight: 700, fontSize: '12px' }}
                   variant="contained"
                   onClick={() => {
                     handleOpenDeletePopup(rowData.uuid)
                   }}
                 >
-                  Hapus
+                  Non-Aktifkan
                 </Button>
               </Box>
             )

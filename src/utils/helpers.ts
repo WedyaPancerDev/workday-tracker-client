@@ -34,3 +34,11 @@ export const formatDateTime = (dateTimeStr: string): string => {
 export const generateGoogleMapsLink = (lat: string, lng: string): string => {
   return `https://www.google.com/maps?q=${lat},${lng}`
 }
+
+export const getCurrentDay = (): string => {
+  const date = new Date()
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+  const dayName = days[date.getDay()]
+
+  return dayName
+}
