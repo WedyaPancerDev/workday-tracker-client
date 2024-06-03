@@ -7,7 +7,7 @@ import { AuthOption } from '@/utils/next-auth'
 import type { GetServerSidePropsContext } from 'next'
 import { getServerSession } from 'next-auth'
 import { useEffect } from 'react'
-import { getCurrentToken, removeTokenFromCookie } from '@/utils/cookies'
+import { getCurrentCookie, removeFromCookie } from '@/utils/cookies'
 import { useSession } from 'next-auth/react'
 
 interface SessionNewProps {
@@ -40,13 +40,13 @@ export const getServerSideProps = async (
 
 const Login = (): JSX.Element => {
   const { status } = useSession()
-  const currentToken = getCurrentToken()
+  const currentToken = getCurrentCookie()
   const conditionToken =
     !currentToken || currentToken === '' || currentToken === 'undefined'
 
   useEffect(() => {
     if (conditionToken || status === 'unauthenticated') {
-      removeTokenFromCookie()
+      removeFromCookie()
     }
   }, [conditionToken, status])
 

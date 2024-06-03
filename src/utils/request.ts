@@ -1,5 +1,5 @@
 import axios, { getError } from './axios'
-import { getCurrentToken } from './cookies'
+import { getCurrentCookie } from './cookies'
 
 interface RequestProps {
   url: string
@@ -30,7 +30,7 @@ export const fetcher = async (url: string): Promise<any> => {
   try {
     const { data } = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${getCurrentToken()}`
+        Authorization: `Bearer ${getCurrentCookie()}`
       }
     })
 

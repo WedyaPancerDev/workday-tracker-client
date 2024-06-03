@@ -1,113 +1,69 @@
-import React from 'react'
-import { useSelector, useDispatch, type AppState } from '@/store/Store'
-import { IconButton, InputBase, Box, Popover } from '@mui/material'
-import EmojiPicker, {
-  EmojiStyle,
-  type EmojiClickData,
-  Emoji
-} from 'emoji-picker-react'
-import { IconMoodSmile, IconSend } from '@tabler/icons-react'
-import { sendMsg } from '@/store/apps/chat/ChatSlice'
+import { sendMessageByConversationId, type SendMessagePayload } from '@/services/chat'
 
-const ChatMsgSent = (): JSX.Element => {
-  const [msg, setMsg] = React.useState<string>('')
+import { IconSend } from '@tabler/icons-react'
+import { Controller, useForm } from 'react-hook-form'
+import { IconButton, InputBase, Box } from '@mui/material'
 
-  const dispatch = useDispatch()
-  const id = useSelector((state: AppState) => state.chat.chatContent)
+interface IChatMsgSentProps {
+  conversationId: string
+}
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
-  const [chosenEmoji, setChosenEmoji] = React.useState<string>('')
+const ChatMsgSent = ({ conversationId }: IChatMsgSentProps): JSX.Element => {
+  const { control, watch, handleSubmit } = useForm({
+    defaultValues: {
+      message: ''
+    }
+  })
 
-  const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent): void => {
-    setChosenEmoji(emojiData.unified)
-    setMsg(emojiData.emoji)
+  const form = watch()
+
+  const getPayload = (): SendMessagePayload => {
+    const payload: SendMessagePayload = {
+      conversationId,
+      senderId: 'user_id',
+      message: form.message
+    }
+
+    return payload
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    setAnchorEl(event.currentTarget)
-  }
+  const onChatMsgSubmit = async (): Promise<void> => {
+    try {
+      const payload = getPayload()
 
-  const handleClose = (): void => {
-    setAnchorEl(null)
-  }
-
-  const handleChatMsgChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setMsg(e.target.value)
-  }
-
-  const newMsg = { id, msg }
-
-  const onChatMsgSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    setMsg('')
-    dispatch(sendMsg(newMsg))
+      // const response = await sendMessageByConversationId(payload)
+    } catch (error) {
+      console.error({ error })
+    }
   }
 
   return (
     <div style={{ padding: '14px', borderTop: '1px solid #e5e7eb' }}>
       <Box
         component="form"
-        onSubmit={onChatMsgSubmit}
+        method="POST"
+        onSubmit={(e) => {
+          handleSubmit(onChatMsgSubmit)(e)
+        }}
         sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}
       >
-        <IconButton
-          id="long-button"
-          aria-controls="long-menu"
-          aria-expanded="true"
-          aria-haspopup="true"
-          onClick={handleClick}
-        >
-          <IconMoodSmile />
-        </IconButton>
-
-        <Popover
-          id="long-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        >
-          <EmojiPicker onEmojiClick={onEmojiClick} />
-          <Box p={2}>
-            Selected:{' '}
-            {chosenEmoji ? (
-              <Emoji
-                unified={chosenEmoji}
-                emojiStyle={EmojiStyle.APPLE}
-                size={22}
+        <Controller
+          name="message"
+          control={control}
+          render={({ field }) => {
+            return (
+              <InputBase
+                {...field}
+                fullWidth
+                type="text"
+                sx={{ fontWeight: 600 }}
+                placeholder="Type a Message"
               />
-            ) : (
-              ''
-            )}
-          </Box>
-        </Popover>
-        <InputBase
-          id="msg-sent"
-          fullWidth
-          autoFocus
-          value={msg}
-          size="small"
-          type="text"
-          autoComplete="off"
-          sx={{ fontWeight: 600 }}
-          placeholder="Type a Message"
-          onChange={handleChatMsgChange.bind(null)}
-        />
-        <IconButton
-          aria-label="delete"
-          onClick={() => {
-            dispatch(sendMsg(newMsg))
-            setMsg('')
+            )
           }}
-          disabled={!msg}
-          color="primary"
-        >
+        />
+
+        <IconButton type="submit" color="primary">
           <IconSend stroke={1.5} size="20" />
         </IconButton>
       </Box>

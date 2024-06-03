@@ -13,6 +13,7 @@ export interface ILoginResponse {
 }
 
 export interface IProfileResponse {
+  user_id: string
   email: string
   account_status: 'active' | 'inactive'
   uuid: string

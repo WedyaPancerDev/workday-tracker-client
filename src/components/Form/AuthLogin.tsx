@@ -105,7 +105,8 @@ const AuthLogin = (): JSX.Element => {
     }
   }
 
-  const isDisabled = form.email === '' || form.password === ''
+  const isDisabled =
+    form.email === '' || form.password === '' || form.password.length < 8
 
   return (
     <Fragment>
@@ -210,7 +211,7 @@ const AuthLogin = (): JSX.Element => {
                     type={showPassword ? 'text' : 'password'}
                   />
 
-                  {error && (
+                  {error ? (
                     <Typography
                       variant="caption"
                       fontSize="12px"
@@ -218,6 +219,15 @@ const AuthLogin = (): JSX.Element => {
                       color="red"
                     >
                       {error.message}
+                    </Typography>
+                  ) : (
+                    <Typography
+                      variant="caption"
+                      fontSize="12px"
+                      fontWeight={600}
+                      color="gray"
+                    >
+                      Kata sandi minimal 8 karakter
                     </Typography>
                   )}
                 </Box>

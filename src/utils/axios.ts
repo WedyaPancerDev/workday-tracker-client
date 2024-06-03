@@ -2,10 +2,11 @@ import type { ApiResponse } from '@/types/apiResponse'
 
 import axios, { type AxiosError, type AxiosInstance } from 'axios'
 import { exceptionResponse } from './exception'
-import { getCurrentToken } from './cookies'
+import { getCurrentCookie } from './cookies'
 import { CODE_OK } from '@/configs/http'
 
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? ''
+export const BASE_URL_CHAT = process.env.NEXT_PUBLIC_BASE_URL_CHAT ?? ''
 
 export const getError = <T>(error: unknown): any => {
   const axiosError = error as AxiosError
@@ -41,7 +42,7 @@ const instance = axios.create({
   }
 })
 
-const currentToken = getCurrentToken() ?? ''
+const currentToken = getCurrentCookie() ?? ''
 instance.defaults.headers.common.Authorization = `Bearer ${currentToken}`
 
 export const setTokenBearer = (token: string): void => {

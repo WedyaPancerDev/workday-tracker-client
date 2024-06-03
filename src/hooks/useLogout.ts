@@ -4,7 +4,7 @@ import { signOut } from 'next-auth/react'
 import useToast from './useToast'
 import { CODE_OK } from '@/configs/http'
 import { authLogout } from '@/services/auth'
-import { removeTokenFromCookie } from '@/utils/cookies'
+import { removeFromCookie } from '@/utils/cookies'
 
 interface ILogoutHookReturn {
   handleLogout: () => Promise<void>
@@ -26,7 +26,7 @@ const useLogout = (): ILogoutHookReturn => {
         await signOut()
       }
 
-      removeTokenFromCookie()
+      removeFromCookie()
       setIsLoadingLogout(false)
     } catch (error) {
       showToast({

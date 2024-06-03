@@ -1,5 +1,7 @@
-import { last } from 'lodash'
-import { Fragment, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { type ConversationUserByIdResponse } from '@/services/chat'
+import { useRouter } from 'next/router'
+import { Fragment } from 'react'
 import {
   Avatar,
   List,
@@ -12,55 +14,23 @@ import {
   Typography
 } from '@mui/material'
 import Scrollbar from '@/components/Scrollbar'
-import { type ChatsType } from '@/types/chat'
-import { formatDistanceToNowStrict } from 'date-fns'
-import { IconSearch } from '@tabler/icons-react'
-import { useSelector, useDispatch, type AppState } from '@/store/Store'
-import { SelectChat, fetchChats, SearchChat } from '@/store/apps/chat/ChatSlice'
+import { useSelector, type AppState } from '@/store/Store'
+import useMessage from '@/hooks/useMessage'
 
-import OutlineInput from '@/components/OutlineInput'
+interface IChatListing {
+  isLoading?: boolean
+}
 
-const ChatListing = (): JSX.Element => {
-  const dispatch = useDispatch()
+const ChatListing = ({ isLoading }: IChatListing): JSX.Element => {
+  const router = useRouter()
+  const { cid } = router.query
+
+  const { getMessageConversation } = useMessage()
+
   const dashboard = useSelector((state: AppState) => state.dashboard)
-  const activeChat = useSelector((state: AppState) => state.chat.chatContent)
-
-  useEffect(() => {
-    dispatch(fetchChats())
-  }, [dispatch])
-
-  const filterChats = (chats: ChatsType[], cSearch: string): ChatsType[] => {
-    if (chats) {
-      return chats.filter((t) =>
-        t.name.toLocaleLowerCase().includes(cSearch.toLocaleLowerCase())
-      )
-    }
-
-    return chats
-  }
-
-  const chats = useSelector((state) =>
-    filterChats(state.chat.chats, state.chat.chatSearch)
+  const { conversationList, conversationId } = useSelector(
+    (state: AppState) => state.chat
   )
-
-  const getDetails = (conversation: ChatsType): string => {
-    let displayText = ''
-
-    const lastMessage = conversation.messages[conversation.messages.length - 1]
-
-    if (lastMessage) {
-      const sender = lastMessage.senderId === conversation.id ? 'You: ' : ''
-      const message =
-        lastMessage.type === 'image' ? 'Sent a photo' : lastMessage.msg
-      displayText = `${sender}${message}`
-    }
-
-    return displayText
-  }
-
-  const lastActivity = (chat: ChatsType): string => {
-    return last(chat.messages)?.createdAt
-  }
 
   return (
     <Fragment>
@@ -107,15 +77,9 @@ const ChatListing = (): JSX.Element => {
       </Box>
 
       <Box px={3} py={1}>
-        <OutlineInput
-          fullWidth
-          id="search-input"
-          type="text"
-          sx={{ fontWeight: 600 }}
-          placeholder="Search Contacts"
-          endAdornment={<IconSearch size={18} />}
-          onChange={(e) => dispatch(SearchChat(e.target.value))}
-        />
+        <Typography variant="h6" color="textPrimary" fontWeight={600}>
+          List Kontak
+        </Typography>
       </Box>
 
       <List sx={{ px: 0 }}>
@@ -125,71 +89,69 @@ const ChatListing = (): JSX.Element => {
             maxHeight: '600px'
           }}
         >
-          {chats?.length ? (
-            chats.map((chat: any) => {
-              const lastActivityChat = lastActivity(chat)
+          <Box m={2}>
+            {conversationList?.length > 0 ? (
+              (conversationList as ConversationUserByIdResponse[])?.map(
+                (item, indexItem) => {
+                  return (
+                    <Fragment key={item?.conversationId}>
+                      <ListItemButton
+                        onClick={() => {
+                          getMessageConversation(item?.conversationId)
+                        }}
+                        sx={{
+                          mb: 0.5,
+                          py: 2,
+                          px: 3,
+                          alignItems: 'start',
+                          borderRadius: '10px',
+                          border: '1px solid #e5e7eb',
+                          backgroundColor:
+                            (cid || conversationId) === item?.conversationId
+                              ? '#f3f4f6'
+                              : '#FFF'
+                        }}
+                      >
+                        <ListItemAvatar>
+                          <Badge
+                            color="success"
+                            variant="dot"
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'right'
+                            }}
+                            overlap="circular"
+                          >
+                            <Avatar
+                              alt={item?.user?.fullname}
+                              src=""
+                              sx={{ width: 42, height: 42 }}
+                            />
+                          </Badge>
+                        </ListItemAvatar>
 
-              return (
-                <ListItemButton
-                  key={chat.id}
-                  onClick={() => dispatch(SelectChat(chat.id))}
-                  sx={{
-                    mb: 0.5,
-                    py: 2,
-                    px: 3,
-                    alignItems: 'start'
-                  }}
-                  selected={activeChat === chat.id}
-                >
-                  <ListItemAvatar>
-                    <Badge
-                      color={
-                        chat.status === 'online'
-                          ? 'success'
-                          : chat.status === 'busy'
-                            ? 'error'
-                            : chat.status === 'away'
-                              ? 'warning'
-                              : 'secondary'
-                      }
-                      variant="dot"
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right'
-                      }}
-                      overlap="circular"
-                    >
-                      <Avatar
-                        alt="Remy Sharp"
-                        src={chat.thumb}
-                        sx={{ width: 42, height: 42 }}
-                      />
-                    </Badge>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
-                        {chat.name}
-                      </Typography>
-                    }
-                    secondary={getDetails(chat)}
-                    secondaryTypographyProps={{
-                      noWrap: true
-                    }}
-                    sx={{ my: 0 }}
-                  />
-                  <Box sx={{ flexShrink: '0' }} mt={0.5}>
-                    <Typography variant="body2">
-                      {formatDistanceToNowStrict(new Date(lastActivityChat), {
-                        addSuffix: false
-                      })}
-                    </Typography>
-                  </Box>
-                </ListItemButton>
+                        <ListItemText
+                          primary={
+                            <Typography
+                              variant="subtitle2"
+                              fontWeight={600}
+                              mb={0.5}
+                            >
+                              {item?.user?.fullname || ''}
+                            </Typography>
+                          }
+                          secondary={item?.user?.role}
+                          secondaryTypographyProps={{
+                            noWrap: true
+                          }}
+                          sx={{ my: 0 }}
+                        />
+                      </ListItemButton>
+                    </Fragment>
+                  )
+                }
               )
-            })
-          ) : (
-            <Box m={2}>
+            ) : (
               <Alert
                 severity="error"
                 variant="filled"
@@ -203,8 +165,8 @@ const ChatListing = (): JSX.Element => {
               >
                 No Contacts Found!
               </Alert>
-            </Box>
-          )}
+            )}
+          </Box>
         </Scrollbar>
       </List>
     </Fragment>

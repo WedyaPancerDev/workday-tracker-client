@@ -1,4 +1,4 @@
-import React from 'react'
+import { Fragment, useEffect } from 'react'
 import {
   Typography,
   Divider,
@@ -6,266 +6,145 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  IconButton,
   Box,
-  Stack,
   Badge,
-  useMediaQuery,
-  type Theme
+  Skeleton,
+  CircularProgress
 } from '@mui/material'
-import {
-  IconDotsVertical,
-  IconMenu2,
-  IconPhone,
-  IconVideo
-} from '@tabler/icons-react'
-import { type AppState, useSelector } from '@/store/Store'
-import { formatDistanceToNowStrict } from 'date-fns'
+import { useRouter } from 'next/router'
 
-import { type ChatsType } from '@/types/chat'
-import ChatInsideSidebar from './ChatInsideSidebar'
+import { type AppState, useSelector, dispatch } from '@/store/Store'
+import useMessage from '@/hooks/useMessage'
+import styled from '@emotion/styled'
+import { getMessages } from '@/store/apps/chat/ChatSlice'
 
-interface ChatContentProps {
-  toggleChatSidebar: () => void
-}
+const MessageBox = styled('div')(
+  ({ position }: { position: 'left' | 'right' }) => ({
+    fontWeight: 600,
+    color: '#4b5563',
+    cursor: 'pointer',
+    userSelect: 'none',
+    marginBottom: '18px',
+    padding: '12px 16px',
+    backgroundColor: '#e5e7eb',
+    borderRadius: `${position === 'left' ? '0px 12px' : '12px 0px'} 12px 12px`
+  })
+)
 
-const ChatContent = ({ toggleChatSidebar }: ChatContentProps): JSX.Element => {
-  const [open, setOpen] = React.useState<boolean>(true)
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
+const ChatContent = (): JSX.Element => {
+  const router = useRouter()
+  const { cid } = router.query
 
-  const chatDetails: ChatsType = useSelector(
-    (state: AppState) => state.chat.chats[state.chat.chatContent - 1]
-  )
+  const { getMessageConversation } = useMessage()
+
+  const { messages } = useSelector((state: AppState) => state.chat)
+  const { profile } = useSelector((state: AppState) => state.dashboard)
+
+  useEffect(() => {
+    if (cid) {
+      getMessageConversation(cid as string)
+    }
+
+    return () => {
+      dispatch(getMessages([]))
+    }
+  }, [cid])
+
+  const whoAreYouChat = messages?.find(
+    (item) => item?.user?.uuid !== profile?.user_id
+  )?.user
 
   return (
     <Box>
-      {chatDetails ? (
-        <Box>
-          {/* ------------------------------------------- */}
-          {/* Header Part */}
-          {/* ------------------------------------------- */}
-          <Box>
-            <Box display="flex" alignItems="center" p={2}>
-              <Box
-                sx={{
-                  display: { xs: 'block', md: 'block', lg: 'none' },
-                  mr: '10px'
+      <Box component="div" className="chat-header">
+        <Box display="flex" alignItems="center" px={2} py={1}>
+          <ListItem dense disableGutters>
+            <ListItemAvatar>
+              <Badge
+                color="success"
+                variant="dot"
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
                 }}
+                overlap="circular"
               >
-                <IconMenu2 stroke={1.5} onClick={toggleChatSidebar} />
-              </Box>
-              <ListItem key={chatDetails.id} dense disableGutters>
-                <ListItemAvatar>
-                  <Badge
-                    color={
-                      chatDetails.status === 'online'
-                        ? 'success'
-                        : chatDetails.status === 'busy'
-                          ? 'error'
-                          : chatDetails.status === 'away'
-                            ? 'warning'
-                            : 'secondary'
-                    }
-                    variant="dot"
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right'
-                    }}
-                    overlap="circular"
+                <Avatar alt="" src="" />
+              </Badge>
+            </ListItemAvatar>
+            <ListItemText
+              primary={
+                whoAreYouChat?.fullname ? (
+                  <Typography variant="h5">
+                    {whoAreYouChat?.fullname}
+                  </Typography>
+                ) : (
+                  <Skeleton variant="rounded" width={100} height={25} />
+                )
+              }
+              secondary={
+                whoAreYouChat?.role ? (
+                  <Typography variant="body2" marginTop="4px">
+                    {whoAreYouChat?.role}
+                  </Typography>
+                ) : (
+                  <Skeleton
+                    variant="rounded"
+                    width={50}
+                    height={14}
+                    sx={{ marginTop: '4px' }}
+                  />
+                )
+              }
+            />
+          </ListItem>
+        </Box>
+
+        <Divider />
+      </Box>
+
+      <Box
+        sx={{
+          width: '100%',
+          height: '650px',
+          overflow: 'auto',
+          maxHeight: '800px'
+        }}
+      >
+        <Box p={3} height="100%">
+          {messages?.length > 0 ? (
+            messages.map((chat, chatIndex) => {
+              const isActive = chat?.user?.uuid === profile?.user_id
+
+              return (
+                <Fragment key={chatIndex}>
+                  <Box
+                    className="message-box"
+                    display="flex"
+                    component="div"
+                    justifyContent={isActive ? 'flex-end' : 'flex-start'}
                   >
-                    <Avatar alt={chatDetails.name} src={chatDetails.thumb} />
-                  </Badge>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <Typography variant="h5">{chatDetails.name}</Typography>
-                  }
-                  secondary={chatDetails.status}
-                />
-              </ListItem>
-              <Stack direction={'row'}>
-                <IconButton aria-label="phone">
-                  <IconPhone stroke={1.5} />
-                </IconButton>
-                <IconButton aria-label="video">
-                  <IconVideo stroke={1.5} />
-                </IconButton>
-                <IconButton
-                  aria-label="sidebar"
-                  onClick={() => {
-                    setOpen(!open)
-                  }}
-                >
-                  <IconDotsVertical stroke={1.5} />
-                </IconButton>
-              </Stack>
+                    <MessageBox position={isActive ? 'right' : 'left'}>
+                      {chat.message}
+                    </MessageBox>
+                  </Box>
+                </Fragment>
+              )
+            })
+          ) : (
+            <Box
+              p={2}
+              py={1}
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress />
             </Box>
-            <Divider />
-          </Box>
-
-          <Box display="flex">
-            <Box width="100%">
-              <Box
-                sx={{
-                  height: '650px',
-                  overflow: 'auto',
-                  maxHeight: '800px'
-                }}
-              >
-                <Box p={3}>
-                  {chatDetails.messages.map((chat) => {
-                    return (
-                      <Box key={chat.id + chat.createdAt}>
-                        {chatDetails.id === chat.senderId ? (
-                          <Box display="flex">
-                            <ListItemAvatar>
-                              <Avatar
-                                alt={chatDetails.name}
-                                src={chatDetails.thumb}
-                                sx={{ width: 40, height: 40 }}
-                              />
-                            </ListItemAvatar>
-                            <Box>
-                              {chat.createdAt ? (
-                                <Typography
-                                  variant="body2"
-                                  color="grey.400"
-                                  mb={1}
-                                >
-                                  {chatDetails.name},{' '}
-                                  {formatDistanceToNowStrict(
-                                    new Date(chat.createdAt),
-                                    {
-                                      addSuffix: false
-                                    }
-                                  )}{' '}
-                                  ago
-                                </Typography>
-                              ) : null}
-                              {chat.type === 'text' ? (
-                                <Box
-                                  mb={2}
-                                  sx={{
-                                    p: 1,
-                                    backgroundColor: 'grey.100',
-                                    mr: 'auto',
-                                    maxWidth: '320px'
-                                  }}
-                                >
-                                  {chat.msg}
-                                </Box>
-                              ) : null}
-                              {chat.type === 'image' ? (
-                                <Box
-                                  mb={1}
-                                  sx={{
-                                    overflow: 'hidden',
-                                    lineHeight: '0px'
-                                  }}
-                                >
-                                  <img
-                                    src={chat.msg}
-                                    alt="attach"
-                                    width="150"
-                                  />
-                                </Box>
-                              ) : null}
-                            </Box>
-                          </Box>
-                        ) : (
-                          <Box
-                            mb={1}
-                            display="flex"
-                            alignItems="flex-end"
-                            flexDirection="row-reverse"
-                          >
-                            <Box
-                              alignItems="flex-end"
-                              display="flex"
-                              flexDirection={'column'}
-                            >
-                              {chat.createdAt ? (
-                                <Typography
-                                  variant="body2"
-                                  color="grey.400"
-                                  mb={1}
-                                >
-                                  {formatDistanceToNowStrict(
-                                    new Date(chat.createdAt),
-                                    {
-                                      addSuffix: false
-                                    }
-                                  )}{' '}
-                                  ago
-                                </Typography>
-                              ) : null}
-                              {chat.type === 'text' ? (
-                                <Box
-                                  mb={1}
-                                  sx={{
-                                    p: 1,
-                                    backgroundColor: 'primary.light',
-                                    ml: 'auto',
-                                    maxWidth: '320px'
-                                  }}
-                                >
-                                  {chat.msg}
-                                </Box>
-                              ) : null}
-                              {chat.type === 'image' ? (
-                                <Box
-                                  mb={1}
-                                  sx={{ overflow: 'hidden', lineHeight: '0px' }}
-                                >
-                                  <img
-                                    src={chat.msg}
-                                    alt="attach"
-                                    width="250"
-                                  />
-                                </Box>
-                              ) : null}
-                            </Box>
-                          </Box>
-                        )}
-                      </Box>
-                    )
-                  })}
-                </Box>
-              </Box>
-            </Box>
-
-            {/* ------------------------------------------- */}
-            {/* Chat right sidebar Content */}
-            {/* ------------------------------------------- */}
-            {open ? (
-              <Box flexShrink={0}>
-                <ChatInsideSidebar
-                  isInSidebar={lgUp ? open : !open}
-                  chat={chatDetails}
-                />
-              </Box>
-            ) : (
-              ''
-            )}
-          </Box>
+          )}
         </Box>
-      ) : (
-        <Box
-          p={2}
-          py={1}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          sx={{
-            overflowY: 'auto',
-            height: 'calc(100vh - 280px)'
-          }}
-        >
-          <Typography variant="h5" fontSize="18px" fontWeight={600}>
-            ...
-          </Typography>
-        </Box>
-      )}
+      </Box>
     </Box>
   )
 }

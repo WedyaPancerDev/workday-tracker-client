@@ -1,70 +1,47 @@
-import type { AppDispatch } from '@/store/Store'
-
-import { sub } from 'date-fns'
-import { nanoid as uniqueId } from 'nanoid'
+import type {
+  ConversationUserByIdResponse,
+  MessageResponse
+} from '@/services/chat'
 import { createSlice } from '@reduxjs/toolkit'
 
-interface StateType {
-  chats: any[]
-  chatContent: number
-  chatSearch: string
+interface ChatState {
+  conversationId: string
+  messages: MessageResponse[]
+  conversationList: ConversationUserByIdResponse[]
 }
 
-const initialState = {
-  chats: [],
-  chatContent: 1,
-  chatSearch: ''
+const initialState: ChatState = {
+  conversationId: '',
+  messages: [],
+  conversationList: []
 }
 
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    getChats: (state, action) => {
+    saveConversationId: (state: ChatState, action) => {
       return {
         ...state,
-        chats: action.payload
+        conversationId: action.payload
       }
     },
-    SearchChat: (state, action) => {
+    getConversationById: (state, action) => {
       return {
         ...state,
-        chatSearch: action.payload
+        conversationList: action.payload
       }
     },
-    SelectChat: (state, action) => {
+    getMessages: (state: ChatState, action) => {
       return {
         ...state,
-        chatContent: action.payload
+        messages: action.payload
       }
-    },
-    sendMsg: (state: StateType, action) => {
-      const conversation = action.payload
-      const { id, msg } = conversation
-
-      const newMessage = {
-        id,
-        msg,
-        type: 'text',
-        attachments: [],
-        createdAt: sub(new Date(), { seconds: 1 }),
-        senderId: uniqueId()
-      }
-
-      state.chats = state.chats.map((chat) =>
-        chat.id === action.payload.id
-          ? {
-              ...chat,
-              ...chat.messages.push(newMessage)
-            }
-          : chat
-      )
     }
   }
 })
 
-export const { SearchChat, getChats, sendMsg, SelectChat } = chatSlice.actions
-
-export const fetchChats = () => async (dispatch: AppDispatch) => {}
+export const { getConversationById, saveConversationId, getMessages } =
+  chatSlice.actions
 
 export default chatSlice.reducer
