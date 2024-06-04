@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import {
   Typography,
   Divider,
@@ -8,15 +8,13 @@ import {
   ListItemAvatar,
   Box,
   Badge,
-  Skeleton,
-  CircularProgress
+  Skeleton
 } from '@mui/material'
 import { useRouter } from 'next/router'
 
-import { type AppState, useSelector, dispatch } from '@/store/Store'
+import { type AppState, useSelector } from '@/store/Store'
 import useMessage from '@/hooks/useMessage'
 import styled from '@emotion/styled'
-import { getMessages } from '@/store/apps/chat/ChatSlice'
 
 const MessageBox = styled('div')(
   ({ position }: { position: 'left' | 'right' }) => ({
@@ -31,88 +29,120 @@ const MessageBox = styled('div')(
   })
 )
 
+interface IHowAreYouChat {
+  fullname: string
+  role: string
+  coversationId: string
+}
+
 const ChatContent = (): JSX.Element => {
   const router = useRouter()
   const { cid } = router.query
 
+  const [statusChat, setStatusChat] = useState<boolean>(false)
+  const [currentHowAreYouChat, setCurrentHowAreYouChat] =
+    useState<IHowAreYouChat>({
+      fullname: '',
+      role: '',
+      coversationId: ''
+    })
+
   const { getMessageConversation } = useMessage()
 
-  const { messages } = useSelector((state: AppState) => state.chat)
+  const { messages, isOpenChat, conversationList, conversationId } =
+    useSelector((state: AppState) => state.chat)
   const { profile } = useSelector((state: AppState) => state.dashboard)
 
   useEffect(() => {
-    if (cid) {
-      getMessageConversation(cid as string)
+    if (conversationList?.length > 0 && (cid || conversationId)) {
+      const currentData = conversationList.find(
+        (item) => item?.conversationId === (cid || conversationId)
+      )
+
+      setStatusChat(true)
+      setCurrentHowAreYouChat({
+        fullname: currentData?.user?.fullname || '',
+        role: currentData?.user?.role || '',
+        coversationId: currentData?.conversationId || ''
+      })
     }
 
     return () => {
-      dispatch(getMessages([]))
+      setStatusChat(false)
+      setCurrentHowAreYouChat({
+        fullname: '',
+        role: '',
+        coversationId: ''
+      })
     }
-  }, [cid])
+  }, [conversationList?.length, cid, conversationId])
 
-  const whoAreYouChat = messages?.find(
-    (item) => item?.user?.uuid !== profile?.user_id
-  )?.user
+  useEffect(() => {
+    if ((cid || conversationId) && statusChat) {
+      getMessageConversation((cid || conversationId) as string)
+    }
+  }, [cid, conversationId, statusChat])
 
   return (
     <Box>
-      <Box component="div" className="chat-header">
-        <Box display="flex" alignItems="center" px={2} py={1}>
-          <ListItem dense disableGutters>
-            <ListItemAvatar>
-              <Badge
-                color="success"
-                variant="dot"
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-                overlap="circular"
-              >
-                <Avatar alt="" src="" />
-              </Badge>
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                whoAreYouChat?.fullname ? (
-                  <Typography variant="h5">
-                    {whoAreYouChat?.fullname}
-                  </Typography>
-                ) : (
-                  <Skeleton variant="rounded" width={100} height={25} />
-                )
-              }
-              secondary={
-                whoAreYouChat?.role ? (
-                  <Typography variant="body2" marginTop="4px">
-                    {whoAreYouChat?.role}
-                  </Typography>
-                ) : (
-                  <Skeleton
-                    variant="rounded"
-                    width={50}
-                    height={14}
-                    sx={{ marginTop: '4px' }}
-                  />
-                )
-              }
-            />
-          </ListItem>
-        </Box>
+      {isOpenChat ? (
+        <Box component="div" className="chat-header">
+          <Box display="flex" alignItems="center" px={2} py={1}>
+            <ListItem dense disableGutters>
+              <ListItemAvatar>
+                <Badge
+                  color="success"
+                  variant="dot"
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                  overlap="circular"
+                >
+                  <Avatar alt="" src="" />
+                </Badge>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  currentHowAreYouChat.fullname ? (
+                    <Typography variant="h5">
+                      {currentHowAreYouChat.fullname}
+                    </Typography>
+                  ) : (
+                    <Skeleton variant="rounded" width={100} height={25} />
+                  )
+                }
+                secondary={
+                  currentHowAreYouChat.role ? (
+                    <Typography variant="body2" marginTop="4px">
+                      {currentHowAreYouChat.role}
+                    </Typography>
+                  ) : (
+                    <Skeleton
+                      variant="rounded"
+                      width={50}
+                      height={14}
+                      sx={{ marginTop: '4px' }}
+                    />
+                  )
+                }
+              />
+            </ListItem>
+          </Box>
 
-        <Divider />
-      </Box>
+          <Divider />
+        </Box>
+      ) : null}
 
       <Box
         sx={{
           width: '100%',
-          height: '650px',
           overflow: 'auto',
           maxHeight: '800px'
         }}
       >
         <Box p={3} height="100%">
-          {messages?.length > 0 ? (
+          {isOpenChat ? (
             messages.map((chat, chatIndex) => {
               const isActive = chat?.user?.uuid === profile?.user_id
 
@@ -139,8 +169,13 @@ const ChatContent = (): JSX.Element => {
               display="flex"
               alignItems="center"
               justifyContent="center"
+              border="1px solid #E5E7EB"
+              maxWidth="fit-content"
+              marginInline="auto"
             >
-              <CircularProgress />
+              <Typography variant="h6" color="textSecondary">
+                Belum ada percakapan 🍃
+              </Typography>
             </Box>
           )}
         </Box>

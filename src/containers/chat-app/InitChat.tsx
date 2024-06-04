@@ -5,14 +5,13 @@ import { IconMessage } from '@tabler/icons-react'
 import useToast from '@/hooks/useToast'
 import Logo from '@/components/Icon/Logo'
 import { checkIfExist, initChat } from '@/services/chat'
-import { type AppState, useSelector } from '@/store/Store'
+import { type AppState, useSelector, useDispatch } from '@/store/Store'
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/cookies'
 
-interface InitChatProps {
-  setGetChatExist: React.Dispatch<React.SetStateAction<string | null>>
-}
+import { setChatExist } from '@/store/apps/chat/ChatSlice'
 
-const InitChat = ({ setGetChatExist }: InitChatProps): JSX.Element => {
+const InitChat = (): JSX.Element => {
+  const dispatch = useDispatch()
   const { showToast } = useToast()
   const dashboard = useSelector((state: AppState) => state.dashboard)
 
@@ -49,7 +48,6 @@ const InitChat = ({ setGetChatExist }: InitChatProps): JSX.Element => {
         })
       } else {
         await initChat(userId)
-        setGetChatExist('exist')
         saveToLocalStorage('@chat-exist', 'exist')
 
         showToast({
@@ -58,6 +56,7 @@ const InitChat = ({ setGetChatExist }: InitChatProps): JSX.Element => {
         })
       }
 
+      dispatch(setChatExist('exist'))
       setIsLoadingInitChat(false)
     } catch (error) {
       setIsLoadingInitChat(false)

@@ -1,15 +1,20 @@
-import { sendMessageByConversationId, type SendMessagePayload } from '@/services/chat'
+import {
+  sendMessageByConversationId,
+  type SendMessagePayload
+} from '@/services/chat'
 
 import { IconSend } from '@tabler/icons-react'
 import { Controller, useForm } from 'react-hook-form'
 import { IconButton, InputBase, Box } from '@mui/material'
+import { type AppState, useSelector } from '@/store/Store'
 
-interface IChatMsgSentProps {
-  conversationId: string
-}
+const ChatMsgSent = (): JSX.Element => {
+  const { profile } = useSelector((state: AppState) => state.dashboard)
+  const { conversationId, conversationList } = useSelector(
+    (state: AppState) => state.chat
+  )
 
-const ChatMsgSent = ({ conversationId }: IChatMsgSentProps): JSX.Element => {
-  const { control, watch, handleSubmit } = useForm({
+  const { control, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
       message: ''
     }
@@ -17,21 +22,38 @@ const ChatMsgSent = ({ conversationId }: IChatMsgSentProps): JSX.Element => {
 
   const form = watch()
 
-  const getPayload = (): SendMessagePayload => {
+  const getPayload = (): SendMessagePayload | null => {
+    if (!profile?.user_id) return null
+
+    const whoAreYouChat =
+      conversationList?.length > 0
+        ? conversationList?.find(
+            (item) => item?.conversationId === conversationId
+          )?.user
+        : null
+
     const payload: SendMessagePayload = {
       conversationId,
-      senderId: 'user_id',
-      message: form.message
+      senderId: profile.user_id,
+      message: form.message,
+      receiverId: whoAreYouChat?.receiverId || ''
     }
 
     return payload
   }
 
   const onChatMsgSubmit = async (): Promise<void> => {
-    try {
-      const payload = getPayload()
+    const payload = getPayload()
 
-      // const response = await sendMessageByConversationId(payload)
+    try {
+      const response = await sendMessageByConversationId(
+        payload as SendMessagePayload
+      )
+
+      if (response?.code === 200) {
+        console.log('Send it!')
+        setValue('message', '')
+      }
     } catch (error) {
       console.error({ error })
     }
@@ -55,7 +77,9 @@ const ChatMsgSent = ({ conversationId }: IChatMsgSentProps): JSX.Element => {
               <InputBase
                 {...field}
                 fullWidth
+                autoFocus
                 type="text"
+                autoComplete="off"
                 sx={{ fontWeight: 600 }}
                 placeholder="Type a Message"
               />

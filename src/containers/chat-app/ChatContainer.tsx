@@ -2,11 +2,11 @@ import type { AppState } from '@/store/Store'
 
 import { Fragment } from 'react'
 import dynamic from 'next/dynamic'
+import { Box } from '@mui/material'
 
+import InitChat from './InitChat'
+import { useSelector } from '@/store/Store'
 import AppCard from '@/components/Card/AppCard'
-import { Box, Typography } from '@mui/material'
-import { useRouter } from 'next/router'
-import { useSelector } from 'react-redux'
 
 const ChatSidebar = dynamic(
   async () => await import('@/components/Chats/ChatSidebar'),
@@ -30,10 +30,10 @@ const ChatContent = dynamic(
 )
 
 const ChatContainer = (): JSX.Element => {
-  const router = useRouter()
-  const { cid } = router.query
-
-  const { messages } = useSelector((state: AppState) => state.chat)
+  // const { profile } = useSelector((state: AppState) => state.dashboard)
+  const { isAlreadyExist, isOpenChat } = useSelector(
+    (state: AppState) => state.chat
+  )
 
   return (
     <AppCard>
@@ -45,23 +45,20 @@ const ChatContainer = (): JSX.Element => {
         flexDirection="column"
         justifyContent="space-between"
       >
-        {messages?.length < 0 || cid ? (
+        {isAlreadyExist === 'exist' ? (
           <Fragment>
             <ChatContent />
-            <ChatMsgSent conversationId={cid as string} />
+
+            {isOpenChat && <ChatMsgSent />}
           </Fragment>
         ) : (
           <Box
-            p={2}
-            py={1}
-            height="100%"
+            height="90%"
             display="flex"
             alignItems="center"
             justifyContent="center"
           >
-            <Typography variant="h5" fontSize="18px" fontWeight={600}>
-              Belum ada percakapan {':"('}
-            </Typography>
+            <InitChat />
           </Box>
         )}
       </Box>

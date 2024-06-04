@@ -98,6 +98,7 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
     useEffect(() => {
       if (statusUser === 'unauthenticated') {
         removeFromLocalStorage('@chat-exist')
+        // window.history.pushState('', '', 'chat-room')
       }
     }, [statusUser])
 

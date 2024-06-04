@@ -2,18 +2,24 @@ import type {
   ConversationUserByIdResponse,
   MessageResponse
 } from '@/services/chat'
+import { getFromLocalStorage } from '@/utils/cookies'
 import { createSlice } from '@reduxjs/toolkit'
 
 interface ChatState {
   conversationId: string
   messages: MessageResponse[]
   conversationList: ConversationUserByIdResponse[]
+  isAlreadyExist: 'exist' | 'not-exist' | string
+  isOpenChat: boolean
 }
 
 const initialState: ChatState = {
+  isOpenChat: false,
+
   conversationId: '',
   messages: [],
-  conversationList: []
+  conversationList: [],
+  isAlreadyExist: getFromLocalStorage('@chat-exist') || 'not-exist'
 }
 
 const chatSlice = createSlice({
@@ -37,11 +43,28 @@ const chatSlice = createSlice({
         ...state,
         messages: action.payload
       }
+    },
+    setChatExist: (state: ChatState, action) => {
+      return {
+        ...state,
+        isAlreadyExist: action.payload
+      }
+    },
+    setOpenChat: (state: ChatState, action) => {
+      return {
+        ...state,
+        isOpenChat: action.payload
+      }
     }
   }
 })
 
-export const { getConversationById, saveConversationId, getMessages } =
-  chatSlice.actions
+export const {
+  getConversationById,
+  saveConversationId,
+  getMessages,
+  setChatExist,
+  setOpenChat
+} = chatSlice.actions
 
 export default chatSlice.reducer

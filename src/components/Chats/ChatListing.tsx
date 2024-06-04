@@ -13,9 +13,11 @@ import {
   ListItemButton,
   Typography
 } from '@mui/material'
-import Scrollbar from '@/components/Scrollbar'
-import { useSelector, type AppState } from '@/store/Store'
 import useMessage from '@/hooks/useMessage'
+import Scrollbar from '@/components/Scrollbar'
+import { useDispatch, useSelector, type AppState } from '@/store/Store'
+
+import { setOpenChat } from '@/store/apps/chat/ChatSlice'
 
 interface IChatListing {
   isLoading?: boolean
@@ -27,6 +29,7 @@ const ChatListing = ({ isLoading }: IChatListing): JSX.Element => {
 
   const { getMessageConversation } = useMessage()
 
+  const dispatch = useDispatch()
   const dashboard = useSelector((state: AppState) => state.dashboard)
   const { conversationList, conversationId } = useSelector(
     (state: AppState) => state.chat
@@ -90,7 +93,7 @@ const ChatListing = ({ isLoading }: IChatListing): JSX.Element => {
           }}
         >
           <Box m={2}>
-            {conversationList?.length > 0 ? (
+            {conversationList?.length > 0 && !isLoading ? (
               (conversationList as ConversationUserByIdResponse[])?.map(
                 (item, indexItem) => {
                   return (
@@ -98,6 +101,7 @@ const ChatListing = ({ isLoading }: IChatListing): JSX.Element => {
                       <ListItemButton
                         onClick={() => {
                           getMessageConversation(item?.conversationId)
+                          dispatch(setOpenChat(true))
                         }}
                         sx={{
                           mb: 0.5,

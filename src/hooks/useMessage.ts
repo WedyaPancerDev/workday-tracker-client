@@ -24,10 +24,7 @@ const useMessage = (): ReturnProps => {
       if (response?.code === 200) {
         const data = response?.data || []
 
-        if (data?.length > 0) {
-          window.history.pushState('', '', `chat-room?cid=${conversationId}`)
-        }
-
+        // window.history.pushState('', '', `chat-room?cid=${conversationId}`)
         dispatch(saveConversationId(conversationId))
         dispatch(getMessages(data))
       }
