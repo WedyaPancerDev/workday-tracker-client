@@ -1,3 +1,4 @@
+import { useSWRConfig } from 'swr'
 import {
   sendMessageByConversationId,
   type SendMessagePayload
@@ -7,8 +8,10 @@ import { IconSend } from '@tabler/icons-react'
 import { Controller, useForm } from 'react-hook-form'
 import { IconButton, InputBase, Box } from '@mui/material'
 import { type AppState, useSelector } from '@/store/Store'
+import { BASE_URL_CHAT } from '@/utils/axios'
 
 const ChatMsgSent = (): JSX.Element => {
+  const { mutate } = useSWRConfig()
   const { profile } = useSelector((state: AppState) => state.dashboard)
   const { conversationId, conversationList } = useSelector(
     (state: AppState) => state.chat
@@ -53,6 +56,7 @@ const ChatMsgSent = (): JSX.Element => {
       if (response?.code === 200) {
         console.log('Send it!')
         setValue('message', '')
+        mutate(`${BASE_URL_CHAT}/message/${conversationId}`)
       }
     } catch (error) {
       console.error({ error })

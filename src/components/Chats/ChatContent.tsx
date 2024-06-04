@@ -1,3 +1,8 @@
+import type { ApiResponse } from '@/types/apiResponse'
+import type { MessageResponse } from '@/services/chat'
+
+import useSWR from 'swr'
+import styled from '@emotion/styled'
 import { Fragment, useEffect, useState } from 'react'
 import {
   Typography,
@@ -10,11 +15,12 @@ import {
   Badge,
   Skeleton
 } from '@mui/material'
-import { useRouter } from 'next/router'
 
 import { type AppState, useSelector } from '@/store/Store'
-import useMessage from '@/hooks/useMessage'
-import styled from '@emotion/styled'
+// import useMessage from '@/hooks/useMessage'
+
+import { fetcher } from '@/utils/request'
+import { BASE_URL_CHAT } from '@/utils/axios'
 
 const MessageBox = styled('div')(
   ({ position }: { position: 'left' | 'right' }) => ({
@@ -36,9 +42,6 @@ interface IHowAreYouChat {
 }
 
 const ChatContent = (): JSX.Element => {
-  const router = useRouter()
-  const { cid } = router.query
-
   const [statusChat, setStatusChat] = useState<boolean>(false)
   const [currentHowAreYouChat, setCurrentHowAreYouChat] =
     useState<IHowAreYouChat>({
@@ -47,16 +50,17 @@ const ChatContent = (): JSX.Element => {
       coversationId: ''
     })
 
-  const { getMessageConversation } = useMessage()
+  // const { getMessageConversation } = useMessage()
 
-  const { messages, isOpenChat, conversationList, conversationId } =
-    useSelector((state: AppState) => state.chat)
+  const { isOpenChat, conversationList, conversationId } = useSelector(
+    (state: AppState) => state.chat
+  )
   const { profile } = useSelector((state: AppState) => state.dashboard)
 
   useEffect(() => {
-    if (conversationList?.length > 0 && (cid || conversationId)) {
+    if (conversationList?.length > 0 && conversationId) {
       const currentData = conversationList.find(
-        (item) => item?.conversationId === (cid || conversationId)
+        (item) => item?.conversationId === conversationId
       )
 
       setStatusChat(true)
@@ -75,13 +79,24 @@ const ChatContent = (): JSX.Element => {
         coversationId: ''
       })
     }
-  }, [conversationList?.length, cid, conversationId])
+  }, [conversationList?.length, conversationId])
 
-  useEffect(() => {
-    if ((cid || conversationId) && statusChat) {
-      getMessageConversation((cid || conversationId) as string)
-    }
-  }, [cid, conversationId, statusChat])
+  // useEffect(() => {
+  //   if (conversationId && statusChat) {
+  //     getMessageConversation(conversationId as string)
+  //   }
+  // }, [conversationId, statusChat])
+
+  const { data: newMessage, isLoading } = useSWR<
+    ApiResponse<MessageResponse[]>
+  >(
+    conversationId && statusChat
+      ? `${BASE_URL_CHAT}/message/${conversationId}`
+      : null,
+    fetcher
+  )
+
+  console.log({ newMessage })
 
   return (
     <Box>
@@ -142,8 +157,8 @@ const ChatContent = (): JSX.Element => {
         }}
       >
         <Box p={3} height="100%">
-          {isOpenChat ? (
-            messages.map((chat, chatIndex) => {
+          {isOpenChat || isLoading ? (
+            newMessage?.data?.map((chat, chatIndex) => {
               const isActive = chat?.user?.uuid === profile?.user_id
 
               return (
