@@ -17,7 +17,6 @@ import {
 } from '@mui/material'
 
 import { type AppState, useSelector } from '@/store/Store'
-// import useMessage from '@/hooks/useMessage'
 
 import { fetcher } from '@/utils/request'
 import { BASE_URL_CHAT } from '@/utils/axios'
@@ -50,8 +49,6 @@ const ChatContent = (): JSX.Element => {
       coversationId: ''
     })
 
-  // const { getMessageConversation } = useMessage()
-
   const { isOpenChat, conversationList, conversationId } = useSelector(
     (state: AppState) => state.chat
   )
@@ -81,12 +78,6 @@ const ChatContent = (): JSX.Element => {
     }
   }, [conversationList?.length, conversationId])
 
-  // useEffect(() => {
-  //   if (conversationId && statusChat) {
-  //     getMessageConversation(conversationId as string)
-  //   }
-  // }, [conversationId, statusChat])
-
   const { data: newMessage, isLoading } = useSWR<
     ApiResponse<MessageResponse[]>
   >(
@@ -95,8 +86,6 @@ const ChatContent = (): JSX.Element => {
       : null,
     fetcher
   )
-
-  console.log({ newMessage })
 
   return (
     <Box>

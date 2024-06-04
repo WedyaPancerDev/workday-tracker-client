@@ -51,6 +51,29 @@ export const getConversationUserById = async (
   }
 }
 
+interface CreateConversationPayload {
+  senderId: string
+  receiveId: string
+}
+
+interface CreateConversationResponse {
+  conversationId: string
+  members: string[]
+}
+
+export const createConversation = async (
+  payload: CreateConversationPayload
+): Promise<ApiResponse<CreateConversationResponse[]>> => {
+  try {
+    const url = `${BASE_URL_CHAT}/conversation`
+    const result = await axios.post(url, payload)
+
+    return result.data
+  } catch (error) {
+    return getError(error)
+  }
+}
+
 export interface MessageResponse {
   user: {
     uuid: string

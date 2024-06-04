@@ -4,21 +4,26 @@ import { IconMessage } from '@tabler/icons-react'
 
 import useToast from '@/hooks/useToast'
 import Logo from '@/components/Icon/Logo'
-import { checkIfExist, initChat } from '@/services/chat'
+import { saveToLocalStorage } from '@/utils/cookies'
 import { type AppState, useSelector, useDispatch } from '@/store/Store'
-import { getFromLocalStorage, saveToLocalStorage } from '@/utils/cookies'
+import { checkIfExist, initChat, createConversation } from '@/services/chat'
 
 import { setChatExist } from '@/store/apps/chat/ChatSlice'
+import { useRouter } from 'next/router'
 
 const InitChat = (): JSX.Element => {
+  const router = useRouter()
+
   const dispatch = useDispatch()
   const { showToast } = useToast()
-  const dashboard = useSelector((state: AppState) => state.dashboard)
+
+  const { users, profile } = useSelector((state: AppState) => state.dashboard)
+  const { isAlreadyExist } = useSelector((state: AppState) => state.chat)
 
   const [isLoadingExist, setIsLoadingExist] = useState<boolean>(false)
   const [isLoadingInitChat, setIsLoadingInitChat] = useState<boolean>(false)
 
-  const userId = dashboard?.users?.id ?? ''
+  const userId = users?.id ?? ''
 
   async function handleCheckIfExist(): Promise<boolean | undefined> {
     try {
@@ -34,20 +39,38 @@ const InitChat = (): JSX.Element => {
     }
   }
 
-  async function handleInitChat(): Promise<void> {
-    const getChatExist = getFromLocalStorage('@chat-exist')
+  async function handleCreateChat(userIds: string): Promise<void> {
+    try {
+      const response = await createConversation({
+        receiveId: '0390f3125f5d5c93ea6d836ce382',
+        senderId: userIds
+      })
 
+      if (response?.code === 200) {
+        console.log('OK')
+
+        saveToLocalStorage('@chat-start', 'start')
+        router.reload()
+      }
+    } catch (error) {
+      console.error({ error })
+    }
+  }
+
+  async function handleInitChat(): Promise<void> {
     try {
       setIsLoadingInitChat(true)
       const isExist = await handleCheckIfExist()
 
-      if (getChatExist === 'exist' && isExist) {
+      if (isAlreadyExist === 'exist' && isExist) {
         showToast({
           type: 'success',
           message: 'Selamat datang kembali!'
         })
       } else {
         await initChat(userId)
+        users?.role !== 'administrator' &&
+          (await handleCreateChat(profile?.user_id ?? ''))
         saveToLocalStorage('@chat-exist', 'exist')
 
         showToast({

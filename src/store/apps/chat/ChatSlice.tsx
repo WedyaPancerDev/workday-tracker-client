@@ -10,6 +10,7 @@ interface ChatState {
   messages: MessageResponse[]
   conversationList: ConversationUserByIdResponse[]
   isAlreadyExist: 'exist' | 'not-exist' | string
+  isChatStart: 'start' | 'nope' | string
   isOpenChat: boolean
 }
 
@@ -19,7 +20,8 @@ const initialState: ChatState = {
   conversationId: '',
   messages: [],
   conversationList: [],
-  isAlreadyExist: getFromLocalStorage('@chat-exist') || 'not-exist'
+  isAlreadyExist: getFromLocalStorage('@chat-exist') || 'not-exist',
+  isChatStart: getFromLocalStorage('@chat-start') || 'nope'
 }
 
 const chatSlice = createSlice({
@@ -48,6 +50,12 @@ const chatSlice = createSlice({
       return {
         ...state,
         isAlreadyExist: action.payload
+      }
+    },
+    setChatStart: (state: ChatState, action) => {
+      return {
+        ...state,
+        isChatStart: action.payload
       }
     },
     setOpenChat: (state: ChatState, action) => {
