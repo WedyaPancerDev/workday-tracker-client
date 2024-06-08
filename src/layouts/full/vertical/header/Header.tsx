@@ -13,8 +13,15 @@ import {
   setToggleSidebar,
   setToggleMobileSidebar
 } from '@/store/customizer/CustomizerSlice'
+
+import dynamic from 'next/dynamic'
+
 import { IconMenu2 } from '@tabler/icons-react'
-import Profile from './Profile'
+// import Profile from ''
+
+const Profile = dynamic(async () => await import('./Profile'), {
+  ssr: false
+})
 
 const Header = (): JSX.Element => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))

@@ -1,48 +1,83 @@
+import { nanoid } from 'nanoid'
 import { useCallback, useState } from 'react'
 
 import useToast from './useToast'
-import { useDispatch } from '@/store/Store'
-import { getMessageByConversationId } from '@/services/chat'
-import { getMessages, saveConversationId } from '@/store/apps/chat/ChatSlice'
+import { db } from '@/configs/firebase'
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+
+export interface IFindUserResponse {
+  email: string
+  fullname: string
+  joined_company_at: string
+  position: string
+  user_id: string
+}
+
+export interface IConversationResponse {
+  conversationId: string
+  date_created: string
+  members: string[]
+}
+
+export interface IConversationUserResponse {
+  user: {
+    receiverId: string
+    role: string
+    fullname: string
+  }
+  conversationId: string
+}
+
+export interface IMessageResponse {
+  conversationId: string
+  date_created: number
+  message: string
+  senderId: string
+}
 
 interface ReturnProps {
-  isLoading: boolean
-  getMessageConversation: (conversationId: string) => Promise<void>
+  isLoadingConversation: boolean
+  createConversation: (senderId: string, receiverId: string) => Promise<void>
 }
 
 const useMessage = (): ReturnProps => {
-  const dispatch = useDispatch()
-
   const { showToast } = useToast()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const getMessageConversation = useCallback(async (conversationId: string) => {
-    try {
-      setIsLoading(true)
-      const response = await getMessageByConversationId(conversationId)
+  const [isLoadingConversation, setIsLoadingConversation] =
+    useState<boolean>(false)
 
-      if (response?.code === 200) {
-        const data = response?.data || []
+  const createConversation = useCallback(
+    async (senderId: string, receiverId: string) => {
+      const conversationId = nanoid()
 
-        // window.history.pushState('', '', `chat-room?cid=${conversationId}`)
-        dispatch(saveConversationId(conversationId))
-        dispatch(getMessages(data))
+      try {
+        setIsLoadingConversation(true)
+        await setDoc(doc(db, 'conversations', conversationId), {
+          conversationId,
+          members: [senderId, receiverId],
+          date_created: serverTimestamp()
+        })
+
+        showToast({
+          message: 'Conversation created successfully',
+          type: 'success'
+        })
+        setIsLoadingConversation(false)
+      } catch (error) {
+        showToast({
+          message: 'Failed to create conversation',
+          type: 'error'
+        })
+        setIsLoadingConversation(false)
+        console.error({ error })
       }
-      setIsLoading(false)
-    } catch (error) {
-      showToast({
-        type: 'error',
-        message: 'Gagal mengambil data percakapan'
-      })
-
-      setIsLoading(false)
-      console.error({ error })
-    }
-  }, [])
+    },
+    []
+  )
 
   return {
-    isLoading,
-    getMessageConversation
+    isLoadingConversation,
+    createConversation
   }
 }
 

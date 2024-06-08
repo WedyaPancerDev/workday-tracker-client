@@ -4,7 +4,10 @@ import { signOut } from 'next-auth/react'
 import useToast from './useToast'
 import { CODE_OK } from '@/configs/http'
 import { authLogout } from '@/services/auth'
-import { removeFromCookie } from '@/utils/cookies'
+import { removeFromCookie, saveToLocalStorage } from '@/utils/cookies'
+
+import { signOut as signOutFirebase } from 'firebase/auth'
+import { auth } from '@/configs/firebase'
 
 interface ILogoutHookReturn {
   handleLogout: () => Promise<void>
@@ -23,6 +26,9 @@ const useLogout = (): ILogoutHookReturn => {
       const response = await authLogout()
 
       if (response?.code === CODE_OK) {
+        saveToLocalStorage('@auto-auth', 'logout')
+        saveToLocalStorage('@chat-exist', 'not-exist')
+        await signOutFirebase(auth)
         await signOut()
       }
 

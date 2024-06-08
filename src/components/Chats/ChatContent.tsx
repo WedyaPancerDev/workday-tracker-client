@@ -1,7 +1,5 @@
-import type { ApiResponse } from '@/types/apiResponse'
-import type { MessageResponse } from '@/services/chat'
+import type { IMessageResponse } from '@/hooks/useMessage'
 
-import useSWR from 'swr'
 import styled from '@emotion/styled'
 import { Fragment, useEffect, useState } from 'react'
 import {
@@ -15,11 +13,17 @@ import {
   Badge,
   Skeleton
 } from '@mui/material'
-
 import { type AppState, useSelector } from '@/store/Store'
-
-import { fetcher } from '@/utils/request'
-import { BASE_URL_CHAT } from '@/utils/axios'
+import {
+  type DocumentData,
+  type Query,
+  type QuerySnapshot,
+  collection,
+  query,
+  where,
+  onSnapshot
+} from 'firebase/firestore'
+import { db } from '@/configs/firebase'
 
 const MessageBox = styled('div')(
   ({ position }: { position: 'left' | 'right' }) => ({
@@ -34,58 +38,51 @@ const MessageBox = styled('div')(
   })
 )
 
-interface IHowAreYouChat {
-  fullname: string
-  role: string
-  coversationId: string
-}
-
 const ChatContent = (): JSX.Element => {
-  const [statusChat, setStatusChat] = useState<boolean>(false)
-  const [currentHowAreYouChat, setCurrentHowAreYouChat] =
-    useState<IHowAreYouChat>({
-      fullname: '',
-      role: '',
-      coversationId: ''
-    })
-
-  const { isOpenChat, conversationList, conversationId } = useSelector(
+  const { conversationId, whoAreYouChat, isOpenChat } = useSelector(
     (state: AppState) => state.chat
   )
-  const { profile } = useSelector((state: AppState) => state.dashboard)
+
+  const [messages, setMessages] = useState<IMessageResponse[]>([])
+
+  const snapshotMessageQuery = (
+    conversationId: string
+  ): Query<DocumentData> => {
+    const messageCollection = collection(db, 'messages')
+    const messageQuery = query(
+      messageCollection,
+      where('conversationId', '==', conversationId)
+      // orderBy('date_created', 'asc')
+    )
+
+    return messageQuery
+  }
+
+  const handleSnapshot = (querySnapshot: QuerySnapshot<DocumentData>): void => {
+    const messagesContainer: IMessageResponse[] = []
+    querySnapshot.forEach((doc) => {
+      messagesContainer.push(doc.data() as IMessageResponse)
+    })
+
+    setMessages(
+      messagesContainer.sort((a, b) => a.date_created - b.date_created)
+    )
+  }
 
   useEffect(() => {
-    if (conversationList?.length > 0 && conversationId) {
-      const currentData = conversationList.find(
-        (item) => item?.conversationId === conversationId
-      )
+    let unSub = (): void => {}
 
-      setStatusChat(true)
-      setCurrentHowAreYouChat({
-        fullname: currentData?.user?.fullname || '',
-        role: currentData?.user?.role || '',
-        coversationId: currentData?.conversationId || ''
+    if (conversationId) {
+      const query = snapshotMessageQuery(conversationId)
+      unSub = onSnapshot(query, (querySnapshot) => {
+        handleSnapshot(querySnapshot)
       })
     }
 
     return () => {
-      setStatusChat(false)
-      setCurrentHowAreYouChat({
-        fullname: '',
-        role: '',
-        coversationId: ''
-      })
+      unSub()
     }
-  }, [conversationList?.length, conversationId])
-
-  const { data: newMessage, isLoading } = useSWR<
-    ApiResponse<MessageResponse[]>
-  >(
-    conversationId && statusChat
-      ? `${BASE_URL_CHAT}/message/${conversationId}`
-      : null,
-    fetcher
-  )
+  }, [conversationId])
 
   return (
     <Box>
@@ -108,18 +105,18 @@ const ChatContent = (): JSX.Element => {
               </ListItemAvatar>
               <ListItemText
                 primary={
-                  currentHowAreYouChat.fullname ? (
+                  whoAreYouChat?.fullname ? (
                     <Typography variant="h5">
-                      {currentHowAreYouChat.fullname}
+                      {whoAreYouChat.fullname}
                     </Typography>
                   ) : (
                     <Skeleton variant="rounded" width={100} height={25} />
                   )
                 }
                 secondary={
-                  currentHowAreYouChat.role ? (
+                  whoAreYouChat?.role ? (
                     <Typography variant="body2" marginTop="4px">
-                      {currentHowAreYouChat.role}
+                      {whoAreYouChat.role}
                     </Typography>
                   ) : (
                     <Skeleton
@@ -146,9 +143,9 @@ const ChatContent = (): JSX.Element => {
         }}
       >
         <Box p={3} height="100%">
-          {isOpenChat || isLoading ? (
-            newMessage?.data?.map((chat, chatIndex) => {
-              const isActive = chat?.user?.uuid === profile?.user_id
+          {isOpenChat ? (
+            messages?.map((chat, chatIndex) => {
+              const isActive = chat.senderId !== whoAreYouChat?.user_id
 
               return (
                 <Fragment key={chatIndex}>
@@ -159,7 +156,7 @@ const ChatContent = (): JSX.Element => {
                     justifyContent={isActive ? 'flex-end' : 'flex-start'}
                   >
                     <MessageBox position={isActive ? 'right' : 'left'}>
-                      {chat.message}
+                      {chat?.message || ''}
                     </MessageBox>
                   </Box>
                 </Fragment>

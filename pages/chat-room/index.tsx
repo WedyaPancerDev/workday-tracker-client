@@ -13,7 +13,7 @@ const ChatContainer = dynamic(
   }
 )
 
-const ChatRoom = (): JSX.Element => {
+const IsChatRoomAvailable = (): JSX.Element => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   if (!lgUp) {
@@ -33,11 +33,15 @@ const ChatRoom = (): JSX.Element => {
     )
   }
 
+  return <ChatContainer />
+}
+
+const ChatRoom = (): JSX.Element => {
   return (
     <Fragment>
       <SEO title="Chat Room | Workday Tracker" />
 
-      <ChatContainer />
+      <IsChatRoomAvailable />
     </Fragment>
   )
 }

@@ -1,8 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
 
 import CustomizerReducer from './customizer/CustomizerSlice'
+import AuthenticationFirebase from './apps/AuthenticationFirebaseSlice'
 import DashboardReducer from './apps/DashboardSlice'
-import ChatsReducer from './apps/chat/ChatSlice'
+import ChatsReducer from './apps/ChatSlice'
 
 import { combineReducers } from 'redux'
 import {
@@ -15,11 +16,13 @@ export const store = configureStore({
   reducer: {
     customizer: CustomizerReducer,
     dashboard: DashboardReducer,
-    chat: ChatsReducer
+    chat: ChatsReducer,
+    authFirebase: AuthenticationFirebase
   }
 })
 
 const rootReducer = combineReducers({
+  authFirebase: AuthenticationFirebase,
   customizer: CustomizerReducer,
   dashboard: DashboardReducer,
   chat: ChatsReducer

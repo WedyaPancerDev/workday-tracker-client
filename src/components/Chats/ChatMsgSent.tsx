@@ -1,21 +1,15 @@
-import { useSWRConfig } from 'swr'
-import {
-  sendMessageByConversationId,
-  type SendMessagePayload
-} from '@/services/chat'
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IconSend } from '@tabler/icons-react'
 import { Controller, useForm } from 'react-hook-form'
 import { IconButton, InputBase, Box } from '@mui/material'
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { db } from '@/configs/firebase'
+import { nanoid } from 'nanoid'
 import { type AppState, useSelector } from '@/store/Store'
-import { BASE_URL_CHAT } from '@/utils/axios'
 
 const ChatMsgSent = (): JSX.Element => {
-  const { mutate } = useSWRConfig()
-  const { profile } = useSelector((state: AppState) => state.dashboard)
-  const { conversationId, conversationList } = useSelector(
-    (state: AppState) => state.chat
-  )
+  const { conversationId } = useSelector((state: AppState) => state.chat)
+  const { currentUser } = useSelector((state: AppState) => state.authFirebase)
 
   const { control, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -25,39 +19,20 @@ const ChatMsgSent = (): JSX.Element => {
 
   const form = watch()
 
-  const getPayload = (): SendMessagePayload | null => {
-    if (!profile?.user_id) return null
-
-    const whoAreYouChat =
-      conversationList?.length > 0
-        ? conversationList?.find(
-            (item) => item?.conversationId === conversationId
-          )?.user
-        : null
-
-    const payload: SendMessagePayload = {
-      conversationId,
-      senderId: profile.user_id,
-      message: form.message,
-      receiverId: whoAreYouChat?.receiverId || ''
-    }
-
-    return payload
-  }
-
-  const onChatMsgSubmit = async (): Promise<void> => {
-    const payload = getPayload()
+  const onSubmit = async (): Promise<void> => {
+    if (form.message === '') return
+    const messageId = nanoid()
+    const currentUnixtime = new Date().getTime()
 
     try {
-      const response = await sendMessageByConversationId(
-        payload as SendMessagePayload
-      )
+      await setDoc(doc(db, 'messages', messageId), {
+        conversationId,
+        date_created: currentUnixtime,
+        senderId: currentUser?.user_id,
+        message: form.message
+      })
 
-      if (response?.code === 200) {
-        console.log('Send it!')
-        setValue('message', '')
-        mutate(`${BASE_URL_CHAT}/message/${conversationId}`)
-      }
+      setValue('message', '')
     } catch (error) {
       console.error({ error })
     }
@@ -69,7 +44,7 @@ const ChatMsgSent = (): JSX.Element => {
         component="form"
         method="POST"
         onSubmit={(e) => {
-          handleSubmit(onChatMsgSubmit)(e)
+          handleSubmit(onSubmit)(e)
         }}
         sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}
       >

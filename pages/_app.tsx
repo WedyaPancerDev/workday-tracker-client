@@ -38,14 +38,15 @@ const MyApp = (props: MyAppProps): JSX.Element => {
 
   useEffect(() => {
     const handleStart = (url: string): void => {
-      url !== router.asPath && setIsLoading(true)
+      url !== router.pathname && setIsLoading(true)
     }
 
     const handleComplete = (url: string): void => {
-      url === router.asPath &&
-        (isTimeout = setTimeout(() => {
-          setIsLoading(false)
-        }, 500))
+      url === router.pathname
+        ? (isTimeout = setTimeout(() => {
+            setIsLoading(false)
+          }, 500))
+        : setIsLoading(false)
     }
 
     router.events.on('routeChangeStart', handleStart)

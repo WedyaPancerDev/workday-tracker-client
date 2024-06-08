@@ -1,12 +1,17 @@
 import type { AppState } from '@/store/Store'
 
-import { Fragment } from 'react'
 import dynamic from 'next/dynamic'
 import { Box } from '@mui/material'
+import { Fragment, useEffect } from 'react'
 
 import InitChat from './InitChat'
 import { useSelector } from '@/store/Store'
 import AppCard from '@/components/Card/AppCard'
+
+import { getFromLocalStorage } from '@/utils/cookies'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/configs/firebase'
+import useAuthFirebase from '@/hooks/useAuthFirebase'
 
 const ChatSidebar = dynamic(
   async () => await import('@/components/Chats/ChatSidebar'),
@@ -30,10 +35,27 @@ const ChatContent = dynamic(
 )
 
 const ChatContainer = (): JSX.Element => {
-  // const { profile } = useSelector((state: AppState) => state.dashboard)
+  const isAutoLogin = getFromLocalStorage('@auto-auth') || ''
+
   const { isAlreadyExist, isOpenChat } = useSelector(
     (state: AppState) => state.chat
   )
+
+  const { getUserInfo } = useAuthFirebase()
+
+  useEffect(() => {
+    let unSub: () => void = () => {}
+
+    if (isAutoLogin === 'done') {
+      unSub = onAuthStateChanged(auth, (user) => {
+        getUserInfo(user?.uid || '')
+      })
+    }
+
+    return () => {
+      unSub()
+    }
+  }, [isAutoLogin])
 
   return (
     <AppCard>

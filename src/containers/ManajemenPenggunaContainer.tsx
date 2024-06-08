@@ -146,7 +146,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             header="AKSI"
             field="action"
             alignHeader={'center'}
-            style={{ fontSize: 12, width: lgUp ? '28%' : 0 }}
+            style={{ fontSize: 12, width: lgUp ? '30%' : '25%' }}
           />
         </Row>
       </ColumnGroup>
@@ -342,7 +342,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
                     )
                   }}
                   variant="contained"
-                  sx={{ fontWeight: 700 }}
+                  sx={{ fontWeight: 700, fontSize: '12px' }}
                 >
                   <IconPencil size={18} />
                   Ubah
@@ -352,7 +352,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
                   size="small"
                   type="button"
                   color="error"
-                  sx={{ fontWeight: 700, fontSize: '14px' }}
+                  sx={{ fontWeight: 700, fontSize: '12px' }}
                   variant="contained"
                   onClick={() => {
                     handleOpenDeletePopup(rowData.uuid)

@@ -17,13 +17,15 @@ export interface IProfileResponse {
   email: string
   account_status: 'active' | 'inactive'
   uuid: string
-  id: string
+  id?: string
   fullname: string
+  is_regis: number
   position: string
   phone_number: string | null
   avatar: string | null
   address: string | null
   joined_company_at: string
+  password: string
 }
 
 export const authLogin = async (
@@ -55,6 +57,16 @@ export const authMe = async (): Promise<
     const response = await axios.get('/profile')
 
     return response.data as ApiResponse<IProfileResponse | undefined>
+  } catch (error) {
+    return getError<unknown>(error)
+  }
+}
+
+export const setUserRegistered = async (userId: string): Promise<void> => {
+  try {
+    const response = await axios.patch(`/is-signed/${userId}`)
+
+    return response.data
   } catch (error) {
     return getError<unknown>(error)
   }

@@ -1,27 +1,37 @@
-import type {
-  ConversationUserByIdResponse,
-  MessageResponse
-} from '@/services/chat'
+import type { IMessageResponse } from '@/hooks/useMessage'
 import { getFromLocalStorage } from '@/utils/cookies'
 import { createSlice } from '@reduxjs/toolkit'
 
 interface ChatState {
+  isOpenChat: boolean
+
   conversationId: string
-  messages: MessageResponse[]
-  conversationList: ConversationUserByIdResponse[]
   isAlreadyExist: 'exist' | 'not-exist' | string
   isChatStart: 'start' | 'nope' | string
-  isOpenChat: boolean
+
+  whoAreYouChat: {
+    role: string
+    fullname: string
+    user_id: string
+  }
+
+  messages: IMessageResponse[]
 }
 
 const initialState: ChatState = {
   isOpenChat: false,
 
   conversationId: '',
-  messages: [],
-  conversationList: [],
   isAlreadyExist: getFromLocalStorage('@chat-exist') || 'not-exist',
-  isChatStart: getFromLocalStorage('@chat-start') || 'nope'
+  isChatStart: getFromLocalStorage('@chat-start') || 'nope',
+
+  whoAreYouChat: {
+    role: '',
+    fullname: '',
+    user_id: ''
+  },
+
+  messages: []
 }
 
 const chatSlice = createSlice({
@@ -32,18 +42,6 @@ const chatSlice = createSlice({
       return {
         ...state,
         conversationId: action.payload
-      }
-    },
-    getConversationById: (state, action) => {
-      return {
-        ...state,
-        conversationList: action.payload
-      }
-    },
-    getMessages: (state: ChatState, action) => {
-      return {
-        ...state,
-        messages: action.payload
       }
     },
     setChatExist: (state: ChatState, action) => {
@@ -63,16 +61,29 @@ const chatSlice = createSlice({
         ...state,
         isOpenChat: action.payload
       }
+    },
+    setWhoAreYouChat: (state: ChatState, action) => {
+      return {
+        ...state,
+        whoAreYouChat: action.payload
+      }
+    },
+
+    setMessages: (state: ChatState, action) => {
+      return {
+        ...state,
+        messages: action.payload
+      }
     }
   }
 })
 
 export const {
-  getConversationById,
   saveConversationId,
-  getMessages,
+  setWhoAreYouChat,
   setChatExist,
-  setOpenChat
+  setOpenChat,
+  setMessages
 } = chatSlice.actions
 
 export default chatSlice.reducer
