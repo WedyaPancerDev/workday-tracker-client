@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from 'react'
+import { useEffect, type FC } from 'react'
 import { type Session, type User } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
 
@@ -9,11 +9,7 @@ import { authMe, type ILoginResponse } from '@/services/auth'
 import { useDispatch, useSelector, type AppState } from '@/store/Store'
 import { setToken, setUsers, setProfile } from '@/store/apps/DashboardSlice'
 
-import {
-  getCurrentCookie,
-  saveCookie,
-  removeFromLocalStorage
-} from '@/utils/cookies'
+import { saveCookie } from '@/utils/cookies'
 
 export interface AuthenticatedPageProps {
   user?: User
@@ -24,14 +20,10 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
 ): FC<P> => {
   const AuthenticatedPage = (props: P): JSX.Element | null => {
     const { showToast } = useToast()
-    const { data: dataUser, status: statusUser } = useSession()
-
-    const currentTokenCookie = getCurrentCookie()
+    const { data: dataUser } = useSession()
 
     const dashboard = useSelector((state: AppState) => state.dashboard)
     const dispatch = useDispatch()
-
-    const [isAlreadySave, setIsAlreadySave] = useState<boolean>(false)
 
     const token = (dataUser as Session & ILoginResponse)?.token
     const users = {
@@ -39,9 +31,9 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
       role: (dataUser as Session & ILoginResponse)?.role
     }
 
-    const getProfileUser = async (): Promise<void> => {
+    const getProfileUser = async (tokenNew: string): Promise<void> => {
       try {
-        const response = await authMe()
+        const response = await authMe(tokenNew)
 
         if (response?.code === CODE_OK) {
           const data = response?.data
@@ -80,12 +72,17 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
     }
 
     useEffect(() => {
-      if (token && users?.id !== '' && users?.role !== '') {
+      if (
+        token &&
+        users?.id !== '' &&
+        users?.role !== '' &&
+        !dashboard?.profile
+      ) {
+        saveCookie(token)
         setTokenBearer(token)
         dispatch(setToken(token))
-        saveCookie(token)
+        getProfileUser(token)
 
-        setIsAlreadySave(true)
         dispatch(
           setUsers({
             ...dashboard.users,
@@ -93,24 +90,7 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
           })
         )
       }
-    }, [token, users.id, users.role])
-
-    useEffect(() => {
-      if (statusUser === 'unauthenticated') {
-        removeFromLocalStorage('@chat-exist')
-        // window.history.pushState('', '', 'chat-room')
-      }
-    }, [statusUser])
-
-    useEffect(() => {
-      if (
-        isAlreadySave &&
-        !dashboard?.profile &&
-        (currentTokenCookie || currentTokenCookie !== '')
-      ) {
-        getProfileUser()
-      }
-    }, [isAlreadySave, dashboard?.profile, currentTokenCookie])
+    }, [token, users.id, users.role, dashboard?.profile])
 
     return <WrappedComponent {...props} />
   }

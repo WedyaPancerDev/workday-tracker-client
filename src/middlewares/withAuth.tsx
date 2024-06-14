@@ -31,7 +31,7 @@ export default function withAuth(
 
       if (!token) {
         const url = new URL('/login', req.url)
-        url.searchParams.set('callbackUrl', encodeURI(req.url))
+        // url.searchParams.set('callbackUrl', encodeURI(req.url))
 
         return NextResponse.redirect(url)
       }

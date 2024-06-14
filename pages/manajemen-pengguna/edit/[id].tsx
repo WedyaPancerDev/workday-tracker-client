@@ -91,7 +91,7 @@ const EditManajemenPengguna = (): JSX.Element => {
 
   return (
     <Fragment>
-      <SEO title="Edit Pengguna Baru | Workday Tracker" />
+      <SEO title="Edit Pengguna Baru | Eurocar Service" />
 
       <Box
         component="section"

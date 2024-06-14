@@ -17,7 +17,7 @@ const ManajemenPegawaiContainer = dynamic(
 const ManajemenPegawai = (): JSX.Element => {
   return (
     <Fragment>
-      <SEO title="Manajemen Pegawai | Workday Tracker" />
+      <SEO title="Manajemen Pegawai | Eurocar Service" />
 
       <Box component="section">
         <Box display="flex" flexDirection="column">

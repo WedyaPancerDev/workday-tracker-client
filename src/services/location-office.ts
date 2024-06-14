@@ -7,6 +7,7 @@ export interface ILocationOfficeResponse {
   location_address: string
   latitude: string
   longitude: string
+  is_edit: number
 }
 
 export interface ILocationOfficePayload {
@@ -14,6 +15,7 @@ export interface ILocationOfficePayload {
   location_address: string
   latitude: string
   longitude: string
+  is_edit: boolean
 }
 
 export const getLocationOffice = async (): Promise<

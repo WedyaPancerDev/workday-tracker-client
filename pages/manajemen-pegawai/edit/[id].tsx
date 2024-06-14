@@ -174,7 +174,7 @@ const EditManajemenPegawai = (): JSX.Element => {
 
   return (
     <Fragment>
-      <SEO title="Edit Pegawai | Workday Tracker" />
+      <SEO title="Edit Pegawai | Eurocar Service" />
 
       <Box
         component="section"

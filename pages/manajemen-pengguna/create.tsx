@@ -116,7 +116,7 @@ const CreateManajemenPengguna = (): JSX.Element => {
 
   return (
     <Fragment>
-      <SEO title="Buat Pengguna Baru | Workday Tracker" />
+      <SEO title="Buat Pengguna Baru | Eurocar Service" />
 
       <Box
         component="section"

@@ -93,7 +93,7 @@ const RekapPegawai = (): JSX.Element => {
 
   return (
     <Fragment>
-      <SEO title="Rekap Absensi | Workday Tracker" />
+      <SEO title="Rekap Absensi | Eurocar Service" />
 
       <Box component="section">
         <Box display="flex" flexDirection="column">

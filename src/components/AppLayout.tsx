@@ -5,7 +5,7 @@ import SEO from './SEO'
 const AppLayout = ({
   sx,
   alias,
-  title = 'Workday Tracker',
+  title = 'Eurocar Service',
   children
 }: {
   title?: string

@@ -12,7 +12,8 @@ const CustomFormLabel = styled((props: any) => (
 ))(() => ({
   marginBottom: '5px',
   marginTop: '14px',
-  display: 'block'
+  display: 'block',
+  color: '#6b7280 !important'
 }))
 
 export default CustomFormLabel

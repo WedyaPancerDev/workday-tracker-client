@@ -81,7 +81,7 @@ const InfoCutiPegawai = (): JSX.Element => {
 
   return (
     <Fragment>
-      <SEO title="Detail Cuti Pegawai | Workday Tracker" />
+      <SEO title="Detail Cuti Pegawai | Eurocar Service" />
 
       <Box
         component="section"

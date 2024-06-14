@@ -17,7 +17,7 @@ const ManajemenAbsensiPegawaiContainer = dynamic(
 const AbsensiPegawai = (): JSX.Element => {
   return (
     <Fragment>
-      <SEO title="Manajemen Cuti Pegawai | Workday Tracker" />
+      <SEO title="Manajemen Cuti Pegawai | Eurocar Service" />
 
       <Box component="section">
         <Box display="flex" flexDirection="column">

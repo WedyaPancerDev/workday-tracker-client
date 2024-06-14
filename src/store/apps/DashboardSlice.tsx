@@ -1,4 +1,5 @@
 import type { IProfileResponse } from '@/services/auth'
+import { getCurrentCookie } from '@/utils/cookies'
 import { createSlice } from '@reduxjs/toolkit'
 
 interface DashboardState {
@@ -16,7 +17,7 @@ const initialState: DashboardState = {
     role: ''
   },
   profile: null,
-  token: ''
+  token: getCurrentCookie() || ''
 }
 
 const dashboardSlice = createSlice({

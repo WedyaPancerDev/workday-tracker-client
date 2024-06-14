@@ -17,7 +17,6 @@ export interface IProfileResponse {
   email: string
   account_status: 'active' | 'inactive'
   uuid: string
-  id?: string
   fullname: string
   is_regis: number
   position: string
@@ -50,11 +49,15 @@ export const authLogout = async (): Promise<ApiResponse<unknown>> => {
   }
 }
 
-export const authMe = async (): Promise<
-  ApiResponse<IProfileResponse | undefined>
-> => {
+export const authMe = async (
+  token: string
+): Promise<ApiResponse<IProfileResponse | undefined>> => {
   try {
-    const response = await axios.get('/profile')
+    const response = await axios.get('/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
 
     return response.data as ApiResponse<IProfileResponse | undefined>
   } catch (error) {

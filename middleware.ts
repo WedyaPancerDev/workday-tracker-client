@@ -19,5 +19,6 @@ export default withAuth(mainMiddleware, [
   '/cuti-pegawai',
   '/cuti-pegawai/info/[^/]+',
   '/chat-room',
+  '/lokasi-kantor',
   '/absensi-pegawai'
 ])

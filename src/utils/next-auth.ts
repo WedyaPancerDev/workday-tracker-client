@@ -19,8 +19,7 @@ export const AuthOption: AuthOptions = {
 
         const payload = {
           email,
-          password,
-          secret: process.env.AUTH_SECRET ?? ''
+          password
         }
 
         try {

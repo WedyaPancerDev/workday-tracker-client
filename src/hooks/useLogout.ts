@@ -10,6 +10,7 @@ import { signOut as signOutFirebase } from 'firebase/auth'
 import { auth } from '@/configs/firebase'
 
 interface ILogoutHookReturn {
+  handleLogoutWithoutToken: () => Promise<void>
   handleLogout: () => Promise<void>
   isLoadingLogout: boolean
 }
@@ -43,7 +44,11 @@ const useLogout = (): ILogoutHookReturn => {
     }
   }
 
-  return { handleLogout, isLoadingLogout }
+  const handleLogoutWithoutToken = async (): Promise<void> => {
+    await signOut()
+  }
+
+  return { handleLogout, handleLogoutWithoutToken, isLoadingLogout }
 }
 
 export default useLogout

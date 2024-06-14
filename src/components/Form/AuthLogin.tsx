@@ -34,7 +34,7 @@ const formSchema = yup.object().shape({
 const AuthLogin = (): JSX.Element => {
   const { showToast } = useToast()
   const router = useRouter()
-  const callbackUrl = (router.query.callbackUrl as string) || '/dashboard'
+  const callbackUrl = '/dashboard'
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -73,7 +73,7 @@ const AuthLogin = (): JSX.Element => {
       const result = await signIn('credentials', {
         email: payload.email,
         password: payload.password,
-        callbackUrl,
+        // callbackUrl,
         redirect: false
       })
 

@@ -140,7 +140,7 @@ const CreateManajemenPegawai = (): JSX.Element => {
 
   return (
     <Fragment>
-      <SEO title="Buat Pegawai Baru | Workday Tracker" />
+      <SEO title="Buat Pegawai Baru | Eurocar Service" />
 
       <Box
         component="section"

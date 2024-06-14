@@ -5,6 +5,7 @@ import {
   IconMessage,
   IconReport,
   IconReportOff,
+  IconSmartHome,
   IconUser,
   IconUsers
 } from '@tabler/icons-react'
@@ -34,6 +35,13 @@ export const AdminMenuItems: MenuitemsType[] = [
     title: 'Dashboard',
     icon: IconLayoutDashboard,
     href: '/dashboard',
+    chipColor: 'secondary'
+  },
+  {
+    id: uniqueId(10),
+    title: 'Lokasi Kantor',
+    icon: IconSmartHome,
+    href: '/lokasi-kantor',
     chipColor: 'secondary'
   },
   {

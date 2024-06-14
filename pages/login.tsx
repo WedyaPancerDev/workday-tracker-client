@@ -51,7 +51,7 @@ const Login = (): JSX.Element => {
   }, [conditionToken, status])
 
   return (
-    <AppLayout title="Workday Tracker - Login">
+    <AppLayout title="Eurocar Service - Login">
       <Grid
         container
         spacing={0}

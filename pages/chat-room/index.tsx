@@ -39,7 +39,7 @@ const IsChatRoomAvailable = (): JSX.Element => {
 const ChatRoom = (): JSX.Element => {
   return (
     <Fragment>
-      <SEO title="Chat Room | Workday Tracker" />
+      <SEO title="Chat Room | Eurocar Service" />
 
       <IsChatRoomAvailable />
     </Fragment>
