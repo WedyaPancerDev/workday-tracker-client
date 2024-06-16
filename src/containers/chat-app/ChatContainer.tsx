@@ -41,7 +41,6 @@ const ChatContent = dynamic(
 const ChatContainer = (): JSX.Element => {
   const isAutoLogin = getFromLocalStorage('@auto-auth') || ''
 
-  console.log({ isAutoLogin }, ' : DEBUG')
   const { isAlreadyExist, isOpenChat } = useSelector(
     (state: AppState) => state.chat
   )
