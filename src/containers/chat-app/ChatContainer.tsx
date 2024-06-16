@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { Box } from '@mui/material'
 import { Fragment, useEffect } from 'react'
 
-import InitChat from './InitChat'
+// import InitChat from './InitChat'
 import { useSelector } from '@/store/Store'
 import AppCard from '@/components/Card/AppCard'
 
@@ -12,6 +12,10 @@ import { getFromLocalStorage } from '@/utils/cookies'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/configs/firebase'
 import useAuthFirebase from '@/hooks/useAuthFirebase'
+
+const InitChat = dynamic(async () => await import('./InitChat'), {
+  ssr: false
+})
 
 const ChatSidebar = dynamic(
   async () => await import('@/components/Chats/ChatSidebar'),
@@ -37,6 +41,7 @@ const ChatContent = dynamic(
 const ChatContainer = (): JSX.Element => {
   const isAutoLogin = getFromLocalStorage('@auto-auth') || ''
 
+  console.log({ isAutoLogin }, ' : DEBUG')
   const { isAlreadyExist, isOpenChat } = useSelector(
     (state: AppState) => state.chat
   )
