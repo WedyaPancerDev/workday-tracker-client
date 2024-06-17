@@ -48,6 +48,8 @@ const ManajemenRekapAbsensiContainer = ({
     }
   })
 
+  console.log('dataEmployee', dataEmployee)
+
   const { search: searchForm } = watch()
 
   const renderHeader = (): JSX.Element => {
@@ -90,9 +92,16 @@ const ManajemenRekapAbsensiContainer = ({
             style={{ fontSize: 12 }}
           />
           <Column
-            header="FULLNAME"
+            header="NAMA LENGKAP"
             sortable
             field="fullname"
+            alignHeader={'center'}
+            style={{ fontSize: 12 }}
+          />
+          <Column
+            header="POSISI"
+            sortable
+            field="position"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
@@ -180,6 +189,34 @@ const ManajemenRekapAbsensiContainer = ({
                   }}
                 >
                   {rowData?.fullname ?? '-'}
+                </Typography>
+              </Box>
+            )
+          }}
+        ></Column>
+        <Column
+          field="position"
+          header="POSISI"
+          bodyStyle={{
+            textAlign: 'center',
+            padding: '8px 0'
+          }}
+          body={(rowData: IEmployeeResponse) => {
+            return (
+              <Box className="table-content">
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 600,
+                    maxWidth: '160px',
+                    margin: '0 auto',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {rowData?.position ?? '-'}
                 </Typography>
               </Box>
             )

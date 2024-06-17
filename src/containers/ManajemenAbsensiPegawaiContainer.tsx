@@ -86,28 +86,28 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
             style={{ fontSize: 12 }}
           />
           <Column
-            header="FULLNAME"
+            header="NAMA LENGKAP"
             sortable
             field="fullname"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="POSITION"
+            header="POSISI"
             sortable
             field="position"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="AVATAR"
+            header="FOTO PROFIL"
             sortable
             field="avatar"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="JOINED_COMPANY_AT"
+            header="BERGABUNG PADA"
             sortable
             field="joined_company_at"
             alignHeader={'center'}

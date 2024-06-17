@@ -66,7 +66,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
           sx={{ fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}
         >
           <IconPlus size={20} style={{ marginRight: '2px' }} />
-          <span>Tambah Data Pegawai</span>
+          <span>Tambah Data Karyawan</span>
         </Button>
 
         <Controller

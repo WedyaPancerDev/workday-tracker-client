@@ -28,10 +28,10 @@ const ManajemenPengguna = (): JSX.Element => {
             letterSpacing="-0.01em"
             mb={2}
           >
-            Informasi Manajemen Pengguna
+            Informasi Manajemen Akun Pengguna
           </Typography>
           <BasicBreadcrumbs
-            titleTo="Manajemen Pengguna"
+            titleTo="Manajemen Akun Pengguna"
             linkTo="/manajemen-pengguna"
           />
         </Box>

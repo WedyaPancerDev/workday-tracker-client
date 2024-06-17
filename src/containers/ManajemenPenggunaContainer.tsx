@@ -115,7 +115,7 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             style={{ fontSize: 12 }}
           />
           <Column
-            header="FULLNAME"
+            header="NAMA LENGKAP"
             sortable
             field="fullname"
             alignHeader={'center'}
@@ -129,14 +129,14 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
             style={{ fontSize: 12 }}
           />
           <Column
-            header="POSITION"
+            header="POSISI"
             sortable
             field="position"
             alignHeader={'center'}
             style={{ fontSize: 12 }}
           />
           <Column
-            header="ACCOUNT STATUS"
+            header="STATUS AKUN"
             sortable
             field="account_status"
             alignHeader={'center'}

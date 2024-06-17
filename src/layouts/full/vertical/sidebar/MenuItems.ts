@@ -46,7 +46,7 @@ export const AdminMenuItems: MenuitemsType[] = [
   },
   {
     id: uniqueId(10),
-    title: 'Manajemen Pegawai',
+    title: 'Manajemen Karyawan',
     icon: IconUsers,
     href: '/manajemen-pegawai',
     chipColor: 'secondary'
