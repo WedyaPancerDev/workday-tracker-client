@@ -20,7 +20,7 @@ const InitChat = (): JSX.Element => {
     const userId = profile?.user_id || ''
 
     try {
-      if (profile?.is_regis === 0) {
+      if (Number(profile?.is_regis) === 0) {
         await Promise.all([setUserRegistered(userId), autoRegister()])
       }
 
