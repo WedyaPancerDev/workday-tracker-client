@@ -139,7 +139,7 @@ const ChatContent = (): JSX.Element => {
         sx={{
           width: '100%',
           overflow: 'auto',
-          maxHeight: '800px'
+          maxHeight: '600px'
         }}
       >
         <Box p={3} height="100%">
