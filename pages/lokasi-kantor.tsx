@@ -301,6 +301,7 @@ const ManajemenCutiPegawai = (): JSX.Element => {
                 variant="text"
                 color="inherit"
                 size="large"
+                disabled={isSubmiting}
                 onClick={() => {
                   onSubmit(false)
                 }}
