@@ -4,7 +4,7 @@ import {
   type ILocationOfficeResponse
 } from '@/services/location-office'
 import type { ApiResponse } from '@/types/apiResponse'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
 import * as yup from 'yup'
@@ -39,12 +39,12 @@ const ManajemenCutiPegawai = (): JSX.Element => {
   const { showToast } = useToast()
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
+  const [isSubmiting, setIsSubmiting] = useState<boolean>(false)
+
   const { mutate } = useSWRConfig()
   const { data: locationData, isLoading } = useSWR<
     ApiResponse<ILocationOfficeResponse>
   >('/location-office', fetcher)
-
-  console.log({ locationData })
 
   const { control, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -80,6 +80,7 @@ const ManajemenCutiPegawai = (): JSX.Element => {
     const payload = getPayload(isEdit)
 
     try {
+      setIsSubmiting(true)
       const response = await addLocationOffice(payload)
 
       if (response?.code === 200) {
@@ -90,6 +91,7 @@ const ManajemenCutiPegawai = (): JSX.Element => {
           message: 'Berhasil mengubah lokasi kantor'
         })
 
+        setIsSubmiting(false)
         return
       }
 
@@ -97,7 +99,9 @@ const ManajemenCutiPegawai = (): JSX.Element => {
         type: 'error',
         message: 'Gagal mengubah lokasi kantor'
       })
+      setIsSubmiting(false)
     } catch (error) {
+      setIsSubmiting(false)
       console.error({ error })
     }
   }
@@ -291,7 +295,7 @@ const ManajemenCutiPegawai = (): JSX.Element => {
           </Typography>
 
           <Box marginTop="28px">
-            {locationData?.data?.is_edit === 1 ? (
+            {Number(locationData?.data?.is_edit) === 1 ? (
               <Button
                 type="button"
                 variant="text"
@@ -320,12 +324,13 @@ const ManajemenCutiPegawai = (): JSX.Element => {
               variant="contained"
               color="primary"
               size="large"
+              disabled={isSubmiting}
               sx={{
                 textTransform: 'capitalize',
                 fontWeight: 600
               }}
             >
-              Ubah Lokasi
+              {isSubmiting ? 'Memproses...' : 'Ubah Lokasi'}
             </Button>
           </Box>
         </Box>
