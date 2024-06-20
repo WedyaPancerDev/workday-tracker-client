@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IconSend } from '@tabler/icons-react'
 import { Controller, useForm } from 'react-hook-form'
 import { IconButton, InputBase, Box } from '@mui/material'
@@ -22,12 +21,11 @@ const ChatMsgSent = (): JSX.Element => {
   const onSubmit = async (): Promise<void> => {
     if (form.message === '') return
     const messageId = nanoid()
-    const currentUnixtime = new Date().getTime()
 
     try {
       await setDoc(doc(db, 'messages', messageId), {
         conversationId,
-        date_created: currentUnixtime,
+        date_created: serverTimestamp(),
         senderId: currentUser?.user_id,
         message: form.message
       })

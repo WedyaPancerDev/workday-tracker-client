@@ -17,7 +17,7 @@ const ManajemenPegawaiContainer = dynamic(
 const ManajemenPegawai = (): JSX.Element => {
   return (
     <Fragment>
-      <SEO title="Manajemen Karyawan | Eurocar Service" />
+      <SEO title="Manajemen Pegawai | Eurocar Service" />
 
       <Box component="section">
         <Box display="flex" flexDirection="column">
@@ -28,10 +28,10 @@ const ManajemenPegawai = (): JSX.Element => {
             letterSpacing="-0.01em"
             mb={2}
           >
-            Informasi Manajemen Karyawan
+            Informasi Manajemen Pegawai
           </Typography>
           <BasicBreadcrumbs
-            titleTo="Manajemen Karyawan"
+            titleTo="Manajemen Pegawai"
             linkTo="/manajemen-pegawai"
           />
         </Box>

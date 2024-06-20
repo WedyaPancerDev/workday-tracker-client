@@ -315,7 +315,7 @@ const CreateManajemenPegawai = (): JSX.Element => {
                     placeholder="Contoh: 089777222888"
                   />
 
-                  {error && (
+                  {error ? (
                     <Typography
                       variant="caption"
                       fontSize="12px"
@@ -323,6 +323,14 @@ const CreateManajemenPegawai = (): JSX.Element => {
                       color="red"
                     >
                       {error.message}
+                    </Typography>
+                  ) : (
+                    <Typography
+                      variant="caption"
+                      fontSize="12px"
+                      fontWeight={600}
+                    >
+                      Pastikan nomor telepon yang dimasukan itu berbeda
                     </Typography>
                   )}
                 </Box>

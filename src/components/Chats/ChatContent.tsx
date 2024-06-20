@@ -52,7 +52,7 @@ const ChatContent = (): JSX.Element => {
     const messageQuery = query(
       messageCollection,
       where('conversationId', '==', conversationId)
-      // orderBy('date_created', 'asc')
+      // orderBy('date_created', 'desc')
     )
 
     return messageQuery
@@ -64,9 +64,9 @@ const ChatContent = (): JSX.Element => {
       messagesContainer.push(doc.data() as IMessageResponse)
     })
 
-    setMessages(
-      messagesContainer.sort((a, b) => a.date_created - b.date_created)
-    )
+    if (!querySnapshot.metadata.hasPendingWrites) {
+      setMessages(messagesContainer)
+    }
   }
 
   useEffect(() => {
@@ -144,24 +144,26 @@ const ChatContent = (): JSX.Element => {
       >
         <Box p={3} height="100%">
           {isOpenChat ? (
-            messages?.map((chat, chatIndex) => {
-              const isActive = chat.senderId !== whoAreYouChat?.user_id
+            messages
+              .sort((a, b) => a.date_created - b.date_created)
+              ?.map((chat, chatIndex) => {
+                const isActive = chat.senderId !== whoAreYouChat?.user_id
 
-              return (
-                <Fragment key={chatIndex}>
-                  <Box
-                    className="message-box"
-                    display="flex"
-                    component="div"
-                    justifyContent={isActive ? 'flex-end' : 'flex-start'}
-                  >
-                    <MessageBox position={isActive ? 'right' : 'left'}>
-                      {chat?.message || ''}
-                    </MessageBox>
-                  </Box>
-                </Fragment>
-              )
-            })
+                return (
+                  <Fragment key={chatIndex}>
+                    <Box
+                      className="message-box"
+                      display="flex"
+                      component="div"
+                      justifyContent={isActive ? 'flex-end' : 'flex-start'}
+                    >
+                      <MessageBox position={isActive ? 'right' : 'left'}>
+                        {chat?.message || ''}
+                      </MessageBox>
+                    </Box>
+                  </Fragment>
+                )
+              })
           ) : (
             <Box
               p={2}

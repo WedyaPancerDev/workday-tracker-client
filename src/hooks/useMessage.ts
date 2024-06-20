@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 
 import useToast from './useToast'
 import { db } from '@/configs/firebase'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
 
 export interface IFindUserResponse {
   email: string
@@ -15,7 +15,7 @@ export interface IFindUserResponse {
 
 export interface IConversationResponse {
   conversationId: string
-  date_created: string
+  date_created: number
   members: string[]
 }
 
@@ -49,14 +49,13 @@ const useMessage = (): ReturnProps => {
   const createConversation = useCallback(
     async (senderId: string, receiverId: string) => {
       const conversationId = nanoid()
-      const currentUnixtime = new Date().getTime()
 
       try {
         setIsLoadingConversation(true)
         await setDoc(doc(db, 'conversations', conversationId), {
           conversationId,
           members: [senderId, receiverId],
-          date_created: currentUnixtime
+          date_created: serverTimestamp()
         })
 
         showToast({

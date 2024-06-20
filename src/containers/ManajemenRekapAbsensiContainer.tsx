@@ -40,15 +40,15 @@ const ManajemenRekapAbsensiContainer = ({
 
   const { data: dataEmployee, isLoading } = useSWR<
     ApiResponse<IEmployeeResponse[]>
-  >('/employees', fetcher)
+  >('/employees', fetcher, {
+    revalidateOnFocus: false
+  })
 
   const { control, watch } = useForm({
     defaultValues: {
       search: ''
     }
   })
-
-  console.log('dataEmployee', dataEmployee)
 
   const { search: searchForm } = watch()
 

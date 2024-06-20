@@ -27,7 +27,7 @@ const DashboardContainer = (): JSX.Element => {
       }}
     >
       <SlimCard
-        title="Jumlah Karyawan"
+        title="Jumlah Pegawai"
         type="employee"
         isLoading={isLoading}
         value={informationData?.data?.employees ?? 0}

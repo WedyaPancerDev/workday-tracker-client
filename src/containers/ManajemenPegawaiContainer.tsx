@@ -40,7 +40,9 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
 
   const { data: dataEmployee, isLoading } = useSWR<
     ApiResponse<IEmployeeResponse[]>
-  >('/employees', fetcher)
+  >('/employees', fetcher, {
+    revalidateOnFocus: false
+  })
 
   const { control, watch } = useForm({
     defaultValues: {

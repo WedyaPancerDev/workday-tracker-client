@@ -47,7 +47,10 @@ const ManajemenPenggunaContainer = (): JSX.Element => {
 
   const { data: dataUser, isLoading } = useSWR<ApiResponse<IUsersResponse[]>>(
     '/users',
-    fetcher
+    fetcher,
+    {
+      revalidateOnFocus: false
+    }
   )
 
   const { control, watch } = useForm({

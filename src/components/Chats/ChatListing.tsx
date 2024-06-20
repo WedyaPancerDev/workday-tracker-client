@@ -76,6 +76,7 @@ const ChatListing = (): JSX.Element => {
         return
       }
 
+      setIsError(false)
       querySnapshot.forEach((doc) => {
         setFindUser(doc.data() as IFindUserResponse | null)
       })
