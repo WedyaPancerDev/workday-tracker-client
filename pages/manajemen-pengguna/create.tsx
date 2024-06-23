@@ -46,7 +46,7 @@ const formSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref('password')], 'Password tidak sama')
     .required('Password wajib diisi'),
-  employee_id: yup.object().required('ID Karyawan wajib diisi')
+  employee_id: yup.object().required('ID  wajib diisi')
 })
 
 const CreateManajemenPengguna = (): JSX.Element => {
@@ -160,7 +160,7 @@ const CreateManajemenPengguna = (): JSX.Element => {
               return (
                 <Box className="form-control">
                   <CustomFormLabel htmlFor="pegawai">
-                    Pilih Karyawan
+                    Pilih Pegawai
                   </CustomFormLabel>
                   <Select<IEmployeeValue>
                     {...(field as any)}
@@ -168,7 +168,7 @@ const CreateManajemenPengguna = (): JSX.Element => {
                     getOptionLabel={(option) => option.fullname}
                     getOptionValue={(option) => option.uuid}
                     classNamePrefix="select"
-                    placeholder="Pilih karyawan"
+                    placeholder="Pilih pegawai"
                     options={dataIsNotRegisteredEmployees?.data ?? []}
                     isDisabled={isLoading}
                     isLoading={isLoading}

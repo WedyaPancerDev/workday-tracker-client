@@ -22,6 +22,7 @@ import { updateUserEmail, type IDetailUserResponse } from '@/services/users'
 import useSWR, { useSWRConfig } from 'swr'
 import type { ApiResponse } from '@/types/apiResponse'
 import { fetcher } from '@/utils/request'
+import { decryptText } from '@/utils/helpers'
 
 const formSchema = yup.object().shape({
   email: yup.string().email('Email tidak valid').required('Email wajib diisi')
@@ -31,6 +32,8 @@ const EditManajemenPengguna = (): JSX.Element => {
   const router = useRouter()
   const { id: decryptId = '' } = router.query
 
+  const decryptUuid = decryptText(decryptId as string)
+
   const { showToast } = useToast()
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
@@ -39,7 +42,9 @@ const EditManajemenPengguna = (): JSX.Element => {
   const { mutate } = useSWRConfig()
   const { data: dataDetailUser, isLoading } = useSWR<
     ApiResponse<IDetailUserResponse>
-  >(`/users/${decryptId as string}`, fetcher)
+  >(decryptUuid ? `/users/${decryptUuid as string}` : null, fetcher, {
+    revalidateOnFocus: false
+  })
 
   const { control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
@@ -58,7 +63,7 @@ const EditManajemenPengguna = (): JSX.Element => {
     try {
       setSubmitting(true)
 
-      const response = await updateUserEmail(payload, decryptId as string)
+      const response = await updateUserEmail(payload, decryptUuid as string)
 
       if (response?.code === CODE_OK) {
         showToast({

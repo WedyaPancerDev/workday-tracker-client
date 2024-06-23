@@ -1,8 +1,8 @@
-import { plusJakartaSans } from '@/configs/fonts'
+// import { plusJakartaSans } from '@/configs/fonts'
 
 const typography: any = {
-  ...plusJakartaSans.style,
-  // fontFamily: '"Plus Jakarta Sans", sans-serif;',
+  // ...plusJakartaSans.style,
+  fontFamily: '"Plus Jakarta Sans", sans-serif;',
   h1: {
     fontWeight: 600,
     fontSize: '2.25rem',
