@@ -41,7 +41,6 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size'
 import { fetcher } from '@/utils/request'
-import SelectedFilePreview from '@/components/SelectedFilePreview'
 
 registerPlugin(
   FilePondPluginFileValidateType,
@@ -80,9 +79,11 @@ const EditManajemenPegawai = (): JSX.Element => {
   const { mutate } = useSWRConfig()
   const { data: dataDetailEmployee, isLoading: isLoadingEmployee } = useSWR<
     ApiResponse<IEmployeeResponse>
-  >(`/employees/${pegawaiId as string}`, fetcher)
+  >(`/employees/${pegawaiId as string}`, fetcher, {
+    revalidateOnFocus: false
+  })
 
-  const { control, handleSubmit, watch, getValues, setValue } = useForm({
+  const { control, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
       fullname: '',
       gender: '',
@@ -94,8 +95,6 @@ const EditManajemenPegawai = (): JSX.Element => {
     },
     resolver: yupResolver(formSchema)
   })
-
-  const form = watch()
 
   const getPayload = (): IEmployeePayload => {
     const {
@@ -168,7 +167,6 @@ const EditManajemenPegawai = (): JSX.Element => {
           (item) => item?.role === data?.position
         ) as IRoleValue
       )
-      setValue('avatar', [{ data: { url: data.avatar } }])
     }
   }, [dataDetailEmployee?.data])
 
@@ -180,7 +178,8 @@ const EditManajemenPegawai = (): JSX.Element => {
         component="section"
         sx={{
           width: '100%',
-          maxWidth: lgUp ? '800px' : '100%'
+          maxWidth: lgUp ? '800px' : '100%',
+          paddingBottom: '40px'
         }}
       >
         <Box display="flex" flexDirection="column">
@@ -381,50 +380,36 @@ const EditManajemenPegawai = (): JSX.Element => {
                   </CustomFormLabel>
 
                   <Box className="relative">
-                    {(form.avatar ?? []).length > 0 ? (
-                      <Box sx={{ marginTop: 2.5 }}>
-                        {form?.avatar?.map((file, index, array) => {
-                          return (
-                            <SelectedFilePreview
-                              onDelete={null}
-                              linkUrl={file}
-                              key={index}
-                              label=""
-                            />
-                          )
-                        })}
-                      </Box>
-                    ) : (
-                      <FilePond
-                        server={{
-                          process: {
-                            url: `${BASE_URL}/upload/employee`,
-                            method: 'POST',
-                            headers: {
-                              Authorization: `Bearer ${dashboard.token}`
-                            },
-                            onload: (response) => {
-                              const res = JSON.parse(response)
+                    <FilePond
+                      server={{
+                        process: {
+                          url: `${BASE_URL}/upload/employee`,
+                          method: 'POST',
+                          headers: {
+                            Authorization: `Bearer ${dashboard.token}`
+                          },
+                          onload: (response) => {
+                            const res = JSON.parse(response)
 
-                              setValue('avatar', [...(field?.value ?? []), res])
-                              return res
-                            }
+                            setValue('avatar', [...(field?.value ?? []), res])
+                            return res
                           }
-                        }}
-                        name="file"
-                        acceptedFileTypes={[
-                          'image/jpeg',
-                          'image/png',
-                          'image/jpg'
-                        ]}
-                        allowMultiple
-                        maxFiles={1}
-                        labelIdle="Drop atau pilih file foto profil"
-                        allowDrop
-                        credits={false}
-                        maxFileSize="4MB"
-                      />
-                    )}
+                        }
+                      }}
+                      name="file"
+                      acceptedFileTypes={[
+                        'image/jpeg',
+                        'image/png',
+                        'image/jpg'
+                      ]}
+                      allowMultiple
+                      maxFiles={1}
+                      labelIdle="Drop atau pilih file foto profil"
+                      allowDrop
+                      credits={false}
+                      maxFileSize="4MB"
+                    />
+
                     {error && (
                       <Typography
                         variant="caption"
