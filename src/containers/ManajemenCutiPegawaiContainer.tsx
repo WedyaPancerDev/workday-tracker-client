@@ -245,7 +245,7 @@ const ManajemenPegawaiContainer = (): JSX.Element => {
                 <Typography
                   target="_blank"
                   component={Link}
-                  href={rowData?.avatar || '/'}
+                  href={rowData?.avatar || '/#'}
                   sx={{
                     fontWeight: 700,
                     color: '#4b5563',

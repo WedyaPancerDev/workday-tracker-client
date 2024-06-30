@@ -4,7 +4,7 @@ import { signOut, useSession } from 'next-auth/react'
 
 import useToast from '@/hooks/useToast'
 import { CODE_OK } from '@/configs/http'
-import { setTokenBearer } from '@/utils/axios'
+import axios, { setTokenBearer } from '@/utils/axios'
 import { authMe, type ILoginResponse } from '@/services/auth'
 import { useDispatch, useSelector, type AppState } from '@/store/Store'
 import { setToken, setUsers, setProfile } from '@/store/apps/DashboardSlice'
@@ -82,6 +82,7 @@ export const Authenticated = <P extends AuthenticatedPageProps>(
         setTokenBearer(token)
         dispatch(setToken(token))
         getProfileUser(token)
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
         dispatch(
           setUsers({

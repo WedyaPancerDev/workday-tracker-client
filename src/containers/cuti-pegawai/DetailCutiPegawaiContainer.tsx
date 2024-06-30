@@ -384,7 +384,7 @@ const DetailCutiPegawaiContainer = ({
                 <Typography
                   target="_blank"
                   component={Link}
-                  href={rowData?.document || '/'}
+                  href={rowData?.document || '/#'}
                   sx={{
                     fontWeight: 700,
                     color: '#4b5563',
