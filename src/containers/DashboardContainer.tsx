@@ -58,12 +58,6 @@ const DashboardContainer = (): JSX.Element => {
       <SlimCard
         type="timeoffs"
         isLoading={isLoading}
-        title="Jumlah Cuti Semua Pegawai"
-        value={informationData?.data?.timeoff_all ?? 0}
-      />
-      <SlimCard
-        type="timeoffs"
-        isLoading={isLoading}
         title="Cuti Belum Disetujui"
         value={pendingCount ?? 0}
       />
