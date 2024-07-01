@@ -17,6 +17,7 @@ import {
 import dynamic from 'next/dynamic'
 
 import { IconMenu2 } from '@tabler/icons-react'
+import Notifications from './Notification'
 // import Profile from ''
 
 const Profile = dynamic(async () => await import('./Profile'), {
@@ -83,6 +84,7 @@ const Header = (): JSX.Element => {
           {/* ------------------------------------------- */}
           {/* Toggle Right Sidebar for mobile */}
           {/* ------------------------------------------- */}
+          <Notifications />
           <Profile />
         </Stack>
       </ToolbarStyled>

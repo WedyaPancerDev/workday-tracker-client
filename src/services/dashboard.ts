@@ -6,6 +6,8 @@ export interface IDashboardResponse {
   employees: number
   presences: number
   timeoffs: number
+  timeoff_all: number
+  timeoffPending: number
 }
 
 export const getAllInformation = async (): Promise<

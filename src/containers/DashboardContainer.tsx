@@ -7,9 +7,12 @@ import moment from 'moment'
 import { fetcher } from '@/utils/request'
 import SlimCard from '@/components/SlimCard'
 import { Box } from '@mui/material'
+import usePendingTimeOffCount from '@/hooks/useCountTimeoff'
 
 const DashboardContainer = (): JSX.Element => {
   const currentDate = moment(new Date()).format('YYYY-MM-DD')
+  const { pendingCount } = usePendingTimeOffCount()
+
   const { data: informationData, isLoading } = useSWR<
     ApiResponse<IDashboardResponse>
   >(
@@ -22,7 +25,13 @@ const DashboardContainer = (): JSX.Element => {
       sx={{
         marginTop: 4,
         display: 'grid',
-        gridTemplateColumns: 'repeat(3,1fr)',
+        gridTemplateColumns: 'repeat(1,1fr)',
+        '@media (min-width: 768px)': {
+          gridTemplateColumns: 'repeat(2,1fr)'
+        },
+        '@media (min-width: 992px)': {
+          gridTemplateColumns: 'repeat(3,1fr)'
+        },
         gap: '16px'
       }}
     >
@@ -45,6 +54,18 @@ const DashboardContainer = (): JSX.Element => {
         isLoading={isLoading}
         title="Jumlah Pegawai Cuti Hari ini"
         value={informationData?.data?.timeoffs ?? 0}
+      />
+      <SlimCard
+        type="timeoffs"
+        isLoading={isLoading}
+        title="Jumlah Cuti Semua Pegawai"
+        value={informationData?.data?.timeoff_all ?? 0}
+      />
+      <SlimCard
+        type="timeoffs"
+        isLoading={isLoading}
+        title="Cuti Belum Disetujui"
+        value={pendingCount ?? 0}
       />
     </Box>
   )

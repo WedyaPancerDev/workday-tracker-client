@@ -4,21 +4,17 @@ import {
   Box,
   Badge,
   Menu,
-  MenuItem,
-  Avatar,
   Typography,
-  Button,
   Chip,
   Stack
 } from '@mui/material'
-import * as dropdownData from './data'
-import Scrollbar from '@/components/Scrollbar'
 
 import { IconBellRinging } from '@tabler/icons-react'
-import Link from 'next/link'
+import usePendingTimeOffCount from '@/hooks/useCountTimeoff'
 
 const Notifications = (): JSX.Element => {
   const [anchorEl2, setAnchorEl2] = useState<any | null>(null)
+  const { pendingCount } = usePendingTimeOffCount()
 
   const handleClick2 = (event: React.SyntheticEvent<EventTarget>): void => {
     const value = event.currentTarget
@@ -42,7 +38,7 @@ const Notifications = (): JSX.Element => {
         }}
         onClick={handleClick2}
       >
-        <Badge variant="dot" color="primary">
+        <Badge variant="dot" color={pendingCount < 1 ? 'default' : 'primary'}>
           <IconBellRinging size="21" stroke="1.5" />
         </Badge>
       </IconButton>
@@ -70,61 +66,11 @@ const Notifications = (): JSX.Element => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h6">Notifications</Typography>
-          <Chip label="5 new" color="primary" size="small" />
+          <Typography variant="h6" fontSize="14px">
+            Pegawai Cuti Belum Diproses
+          </Typography>
+          <Chip label={`${pendingCount} new`} color="primary" size="small" />
         </Stack>
-        <Scrollbar sx={{ height: '385px' }}>
-          {dropdownData.notifications.map((notification, index) => (
-            <Box key={index}>
-              <MenuItem sx={{ py: 2, px: 4 }}>
-                <Stack direction="row" spacing={2}>
-                  <Avatar
-                    src={notification.avatar}
-                    alt={notification.avatar}
-                    sx={{
-                      width: 48,
-                      height: 48
-                    }}
-                  />
-                  <Box>
-                    <Typography
-                      variant="subtitle2"
-                      color="textPrimary"
-                      fontWeight={600}
-                      noWrap
-                      sx={{
-                        width: '240px'
-                      }}
-                    >
-                      {notification.title}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="subtitle2"
-                      sx={{
-                        width: '240px'
-                      }}
-                      noWrap
-                    >
-                      {notification.subtitle}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </MenuItem>
-            </Box>
-          ))}
-        </Scrollbar>
-        <Box p={3} pb={1}>
-          <Button
-            href="/apps/email"
-            variant="outlined"
-            component={Link}
-            color="primary"
-            fullWidth
-          >
-            See all Notifications
-          </Button>
-        </Box>
       </Menu>
     </Box>
   )

@@ -2,13 +2,7 @@ import type { ApiResponse } from '@/types/apiResponse'
 
 import axios, { getError } from '@/utils/axios'
 
-type TypeTimeoff =
-  | 'annual'
-  | 'sick_without_docs'
-  | 'sick_with_docs'
-  | 'holiday'
-  | 'unpaid'
-  | 'special_permit'
+type TypeTimeoff = 'cuti' | 'sakit' | 'lembur' | 'tugas_keluar'
 
 export interface IEmployeeTimeoffResponse {
   id: number

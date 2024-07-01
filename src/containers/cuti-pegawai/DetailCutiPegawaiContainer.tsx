@@ -39,12 +39,10 @@ interface IDetailCutiPegawaiContainerProps {
 }
 
 const listMessage: Record<string, string> = {
-  annual: 'Cuti Tahunan',
-  sick_without_docs: 'Cuti Sakit Tanpa Surat Dokter',
-  sick_with_docs: 'Cuti Sakit dengan Surat Dokter',
-  holiday: 'Cuti Liburan',
-  unpaid: 'Cuti Tidak Dibayar',
-  special_permit: 'Cuti Khusus'
+  cuti: 'Cuti Tahunan',
+  sakit: 'Sakit',
+  lembur: 'Lembur',
+  tugas_keluar: 'Tugas Keluar'
 }
 
 const DetailCutiPegawaiContainer = ({
@@ -471,9 +469,8 @@ const DetailCutiPegawaiContainer = ({
                     textTransform: 'capitalize'
                   }}
                 >
-                  {moment(rowData?.timeoff_created_at).format(
-                    'YYYY-MM-DD'
-                  ) ?? '-'}
+                  {moment(rowData?.timeoff_created_at).format('YYYY-MM-DD') ??
+                    '-'}
                 </Typography>
               </Box>
             )
