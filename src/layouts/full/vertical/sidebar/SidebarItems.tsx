@@ -6,8 +6,11 @@ import NavItem from './NavItem'
 import NavCollapse from './NavCollapse'
 import NavGroup from './NavGroup/NavGroup'
 import { setToggleMobileSidebar } from '@/store/customizer/CustomizerSlice'
+import usePendingTimeOffCount from '@/hooks/useCountTimeoff'
 
 const SidebarItems = (): JSX.Element => {
+  const { pendingCount } = usePendingTimeOffCount()
+
   const { pathname } = useRouter()
   const pathDirect = pathname
   const pathWithoutLastPart = pathname.slice(0, pathname.lastIndexOf('/'))
@@ -45,6 +48,7 @@ const SidebarItems = (): JSX.Element => {
               <NavItem
                 item={item}
                 key={item.id}
+                countNotification={pendingCount ?? 0}
                 pathDirect={pathDirect}
                 hideMenu={hideMenu}
                 onClick={() =>

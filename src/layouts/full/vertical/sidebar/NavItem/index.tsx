@@ -37,6 +37,7 @@ interface ItemType {
   hideMenu?: any
   level?: number | any
   pathDirect: string
+  countNotification?: number
 }
 
 const NavItem = ({
@@ -44,7 +45,8 @@ const NavItem = ({
   level,
   pathDirect,
   hideMenu,
-  onClick
+  onClick,
+  countNotification = 0
 }: ItemType): JSX.Element => {
   const customizer = useSelector((state: AppState) => state.customizer)
   const Icon = item?.icon
@@ -85,10 +87,9 @@ const NavItem = ({
     <List component="li" disablePadding key={item?.id && item.title}>
       <Link href={item.href}>
         <ListItemStyled
-          // {...listItemProps}
           disabled={item?.disabled}
           selected={pathDirect === item?.href}
-          sx={{ marginBottom: '10px' }}
+          sx={{ marginBottom: '10px', position: 'relative' }}
           onClick={onClick}
         >
           <ListItemIcon
@@ -103,6 +104,19 @@ const NavItem = ({
           >
             {itemIcon}
           </ListItemIcon>
+
+          {item.href === '/cuti-pegawai' && (
+            <Chip
+              label={countNotification}
+              color={'error'}
+              size="small"
+              sx={{
+                position: 'absolute',
+                right: '8px'
+              }}
+            />
+          )}
+
           <ListItemText>
             {hideMenu ? '' : <>{item?.title}</>}
             <br />

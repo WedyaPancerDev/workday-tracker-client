@@ -67,7 +67,7 @@ const Sidebar = (): JSX.Element => {
           {/* UNTUK MENGUBAH WARNA SIDEBAR */}
           <Box
             sx={{
-              height: '100%',
+              height: '100%'
             }}
           >
             {/* ------------------------------------------- */}

@@ -16,6 +16,7 @@ export interface IEmployeeTimeoffResponse {
   status: 'pending' | 'approved' | 'rejected'
   total_days: number
   timeoff_created_at: string
+  employee_name?: string
 }
 
 export interface IEmployeeTimeoffPayload {
