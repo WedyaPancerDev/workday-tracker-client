@@ -1,14 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  type QuerySnapshot,
-  type DocumentData
-} from 'firebase/firestore'
-import { db } from '@/configs/firebase'
+import useSWR from 'swr'
+import { fetcher } from '@/utils/request'
+
 import type { IEmployeeTimeoffResponse } from '@/services/timeoff'
+import type { ApiResponse } from '@/types/apiResponse'
 
 interface ReturnValues {
   pendingCount: number
@@ -16,34 +10,16 @@ interface ReturnValues {
 }
 
 const usePendingTimeOffCount = (): ReturnValues => {
-  const [pendingCount, setPendingCount] = useState<number>(0)
-  const [pendingName, setPendingName] = useState<IEmployeeTimeoffResponse[]>([])
+  const { data: pendingTimeoff, isLoading: pendingTimeoffLoading } = useSWR<
+    ApiResponse<IEmployeeTimeoffResponse[]>
+  >('/check-timeoff', fetcher)
 
-  const isMounted = useRef(true)
-
-  const handleSnapshot = (querySnapshot: QuerySnapshot<DocumentData>): void => {
-    const count = querySnapshot.size
-    const names = querySnapshot.docs.map((doc) =>
-      doc.data()
-    ) as IEmployeeTimeoffResponse[]
-
-    if (isMounted.current) {
-      setPendingCount(count)
-      setPendingName((prev) => [...prev, ...names])
-    }
-  }
-
-  useEffect(() => {
-    isMounted.current = true
-    const q = query(collection(db, 'timeoff'), where('status', '==', 'pending'))
-
-    const unsubscribe = onSnapshot(q, handleSnapshot)
-
-    return () => {
-      isMounted.current = false
-      unsubscribe()
-    }
-  }, [])
+  const pendingCount = (
+    !pendingTimeoffLoading ? pendingTimeoff?.data?.length : 0
+  ) as number
+  const pendingName = (
+    !pendingTimeoffLoading ? pendingTimeoff?.data : []
+  ) as IEmployeeTimeoffResponse[]
 
   return {
     pendingCount,

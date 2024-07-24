@@ -91,6 +91,7 @@ const Notifications = (): JSX.Element => {
           }}
         >
           {pendingName?.map((employee, index) => {
+            console.log({ employee })
             return (
               <Box
                 key={index}
